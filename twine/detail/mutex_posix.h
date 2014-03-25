@@ -17,32 +17,55 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
+#ifndef TWINE_DETAIL_MUTEX_POSIX_H
+#define TWINE_DETAIL_MUTEX_POSIX_H
 
-#include <cppunit/extensions/HelperMacros.h>
+#ifndef __cplusplus
+#error You are trying to include a C++ only header file
+#endif
 
-#include <twine/mutex.h>
+#include <twine/twine.h>
 
 
-namespace {
+namespace twine {
 
-
-} // anonymous namespace
-
-class ThreadTest
-    : public CppUnit::TestFixture
+mutex::mutex()
+  : m_handle()
 {
-public:
-    CPPUNIT_TEST_SUITE(ThreadTest);
-
-//      CPPUNIT_TEST(testComparison);
-//      CPPUNIT_TEST(testDynamicFor);
-//      CPPUNIT_TEST(testStaticFor);
-
-    CPPUNIT_TEST_SUITE_END();
-
-private:
-
-};
+  pthread_mutex_init(&mHandle, NULL);
+}
 
 
-CPPUNIT_TEST_SUITE_REGISTRATION(ThreadTest);
+
+mutex::~mutex()
+{
+  pthread_mutex_destroy(&m_handle);
+}
+
+
+
+void
+mutex::lock()
+{
+  pthread_mutex_lock(&m_handle);
+}
+
+
+
+bool
+mutex::try_lock()
+{
+  return (0 == pthread_mutex_trylock(&m_handle));
+}
+
+
+
+void
+mutex::unlock()
+{
+  pthread_mutex_unlock(&m_handle);
+}
+
+} // namespace twine
+
+#endif // guard
