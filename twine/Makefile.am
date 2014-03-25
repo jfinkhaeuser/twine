@@ -2,13 +2,17 @@ include $(top_srcdir)/common.mk
 
 SUBDIRS = .
 
+if HAVE_POSIX
+SUBDIRS += posix
+endif
+
+if HAVE_WIN32
+SUBDIRS += win32
+endif
+
 include_HEADERS = \
 	twine.h \
 	twine-config.h \
 	version.h \
 	mutex.h \
-	condition.h \
-	detail/mutex_posix.h \
-	detail/mutex_win32.h \
-	detail/condition_posix.h \
-	detail/condition_win32.h
+	condition.h

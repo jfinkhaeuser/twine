@@ -7,6 +7,11 @@ AC_INIT([twine], [0.1], [jens@unwesen.co.uk])
 AC_CONFIG_SRCDIR([twine])
 AC_CONFIG_HEADERS([twine/twine-config.h])
 
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_MACRO_DIR([m4])
@@ -14,6 +19,20 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.11.1])
 
 AC_LANG_CPLUSPLUS
+
+##############################################################################
+# Make build target available to automake
+target=
+case $target_os in
+  *linux*)
+    target=posix
+    ;;
+  *win32*)
+    target=win32
+    ;;
+esac
+AM_CONDITIONAL([HAVE_POSIX], [test "x$target" == posix])
+AM_CONDITIONAL([HAVE_WIN32], [test "x$target" == win32])
 
 ##############################################################################
 # Checks for programs.

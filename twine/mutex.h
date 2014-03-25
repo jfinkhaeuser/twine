@@ -94,11 +94,11 @@ private:
 
 
 #if defined(TWINE_WIN32)
-  #include <twine/detail/mutex_win32.h>
-  #include <twine/detail/mutex_policy_win32.h>
+  #include <twine/win32/mutex.h>
+  #include <twine/win32/mutex_policy.h>
 #elif defined(TWINE_POSIX)
-  #include <twine/detail/mutex_posix.h>
-  #include <twine/detail/mutex_policy_posix.h>
+  #include <twine/posix/mutex.h>
+  #include <twine/posix/mutex_policy.h>
 #endif
 
 namespace twine {
