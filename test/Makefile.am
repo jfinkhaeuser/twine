@@ -10,5 +10,6 @@ testsuite_LDADD = \
 
 testsuite_SOURCES = \
 	test_mutex.cpp \
+	test_lock.cpp \
 	test_thread.cpp \
 	testsuite.cpp
