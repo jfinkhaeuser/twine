@@ -7,5 +7,8 @@ include_HEADERS = \
 	twine-config.h \
 	version.h \
 	mutex.h \
+	condition.h \
 	detail/mutex_posix.h \
-	detail/mutex_win32.h
+	detail/mutex_win32.h \
+	detail/condition_posix.h \
+	detail/condition_win32.h
