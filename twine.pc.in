@@ -7,5 +7,5 @@ Name: twine
 Description: FIXME
 Requires: FIXME
 Version: @PACKAGE_VERSION@
-Libs: 
-Cflags: -I${includedir}/twine @BOOST_CPPFLAGS@
+Libs: @PTHREAD_LIBS@
+Cflags: -I${includedir}/twine @PTHREAD_CFLAGS@

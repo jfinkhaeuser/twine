@@ -29,9 +29,7 @@ AU_ALIAS([AC_COMPILE_STDCXX_0X], [AX_CXX_COMPILE_STDCXX_0X])
 
 ##############################################################################
 # Checks for libraries.
-AX_BOOST_BASE([1.46.0])
-AX_BOOST_PROGRAM_OPTIONS
-AX_BOOST_THREAD
+AX_PTHREAD()
 PKG_CHECK_MODULES([CPPUNIT], [cppunit >= 1.12])
 
 ##############################################################################
