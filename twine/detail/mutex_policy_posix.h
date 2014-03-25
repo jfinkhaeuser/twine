@@ -17,8 +17,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#ifndef TWINE_DETAIL_MUTEX_WIN32_H
-#define TWINE_DETAIL_MUTEX_WIN32_H
+#ifndef TWINE_DETAIL_MUTEX_POLICY_POSIX_H
+#define TWINE_DETAIL_MUTEX_POLICY_POSIX_H
 
 #ifndef __cplusplus
 #error You are trying to include a C++ only header file
@@ -28,44 +28,34 @@
 
 
 namespace twine {
+namespace detail {
 
-mutex_base::mutex_base()
-  : m_handle()
+/**
+ * Policy for regular mutexes
+ **/
+struct nonrecursive_policy
 {
-  InitializeCriticalSection(&mHandle);
-}
+  static inline void set_attributes(pthread_mutexattr_t * attr)
+  {
+    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_NORMAL);
+  }
+};
 
 
 
-mutex_base::~mutex_base()
+/**
+ * Policy for recursive mutexes
+ **/
+struct recursive_policy
 {
-  DeleteCriticalSection(&m_handle);
-}
+  static inline void set_attributes(pthread_mutexattr_t * attr)
+  {
+    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_RECURSIVE);
+  }
+};
 
 
 
-void
-mutex_base::lock()
-{
-  EnterCriticalSection(&m_handle);
-}
-
-
-
-bool
-mutex_base::try_lock()
-{
-  return TryEnterCriticalSection(&m_handle);
-}
-
-
-
-void
-mutex_base::unlock()
-{
-  LeaveCriticalSection(&m_handle);
-}
-
-} // namespace twine
+}} // namespace twine::detail
 
 #endif // guard

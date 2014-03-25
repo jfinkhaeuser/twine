@@ -61,12 +61,15 @@ namespace twine {
 /// Visual C++).
 /// For other architectures/compilers, system functions are used instead.
 
-class mutex
+template <
+  typename recursion_policyT
+>
+class mutex_base
 {
 public:
   // Constructor/destructor
-  mutex();
-  ~mutex();
+  mutex_base();
+  ~mutex_base();
 
   // Lock the mutex.
   inline void lock();
@@ -76,30 +79,34 @@ public:
   inline void unlock();
 
 private:
+  mutex_base(mutex_base const &) = delete;
+  mutex_base & operator=(mutex_base const &) = delete;
 
-#if defined(TWINE_MUTEX_ASM)
-  int m_lock;
-#else
-  #if defined(TWINE_WIN32)
-    CRITICAL_SECTION  m_handle;
-  #elif defined(TWINE_POSIX)
-    pthread_mutex_t   m_handle;
-  #endif
+#if defined(TWINE_WIN32)
+  CRITICAL_SECTION  m_handle;
+#elif defined(TWINE_POSIX)
+  pthread_mutex_t   m_handle;
 #endif
 };
 
+} // namespace twine
 
-#if defined(TWINE_MUTEX_ASM)
-#error not implemented yet
-#else
-  #if defined(TWINE_WIN32)
-    #include <twine/detail/mutex_win32.h>
-  #elif defined(TWINE_POSIX)
-    #include <twine/detail/mutex_posix.h>
-  #endif
+
+#if defined(TWINE_WIN32)
+  #include <twine/detail/mutex_win32.h>
+  #include <twine/detail/mutex_policy_win32.h>
+#elif defined(TWINE_POSIX)
+  #include <twine/detail/mutex_posix.h>
+  #include <twine/detail/mutex_policy_posix.h>
 #endif
 
+namespace twine {
+
+typedef mutex_base<detail::nonrecursive_policy> mutex;
+typedef mutex_base<detail::recursive_policy>    recursive_mutex;
+
 } // namespace twine
+
 
 #endif // guard
 

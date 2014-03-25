@@ -40,16 +40,6 @@
   #define TWINE_PLATFORM_DEFINED
 #endif
 
-// Check if we can support the assembly language level implementation (otherwise
-// revert to the system API)
-#if (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))) || \
-    (defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))) || \
-    (defined(__GNUC__) && (defined(__ppc__)))
-  #define TWINE_MUTEX_ASM
-#else
-  #define TWINE_MUTEX_SYS
-#endif
-
 // Decide what to include
 #if defined(TWINE_WIN32)
   #ifndef WIN32_LEAN_AND_MEAN
@@ -62,11 +52,7 @@
     #undef __UNDEF_LEAN_AND_MEAN
   #endif
 #else
-  #ifdef TWINE_MUTEX_ASM
-    #include <sched.h>
-  #else
-    #include <pthread.h>
-  #endif
+  #include <pthread.h>
 #endif
 
 #endif // guard

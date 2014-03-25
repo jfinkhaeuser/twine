@@ -29,39 +29,57 @@
 
 namespace twine {
 
-mutex::mutex()
-  : m_handle()
+template <
+  typename recursion_policyT
+>
+mutex_base<recursion_policyT>::mutex_base()
+  : m_handle(PTHREAD_MUTEX_INITIALIZER)
 {
-  pthread_mutex_init(&mHandle, NULL);
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  recursion_policyT::set_attributes(&attr);
+  pthread_mutex_init(&m_handle, &attr);
 }
 
 
 
-mutex::~mutex()
+template <
+  typename recursion_policyT
+>
+mutex_base<recursion_policyT>::~mutex_base()
 {
   pthread_mutex_destroy(&m_handle);
 }
 
 
 
+template <
+  typename recursion_policyT
+>
 void
-mutex::lock()
+mutex_base<recursion_policyT>::lock()
 {
   pthread_mutex_lock(&m_handle);
 }
 
 
 
+template <
+  typename recursion_policyT
+>
 bool
-mutex::try_lock()
+mutex_base<recursion_policyT>::try_lock()
 {
   return (0 == pthread_mutex_trylock(&m_handle));
 }
 
 
 
+template <
+  typename recursion_policyT
+>
 void
-mutex::unlock()
+mutex_base<recursion_policyT>::unlock()
 {
   pthread_mutex_unlock(&m_handle);
 }
