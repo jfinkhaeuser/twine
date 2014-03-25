@@ -76,9 +76,9 @@ private:
 } // namespace twine
 
 #if defined(TWINE_WIN32)
-  #include <twine/detail/condition_win32.h>
+  #include <twine/win32/condition.h>
 #elif defined(TWINE_POSIX)
-  #include <twine/detail/condition_posix.h>
+  #include <twine/posix/condition.h>
 #endif
 
 #endif // guard

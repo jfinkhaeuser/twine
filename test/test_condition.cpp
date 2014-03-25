@@ -20,52 +20,36 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <twine/lock.h>
+#include <twine/condition.h>
+#include <twine/mutex.h>
 
 
-class LockTest
+class ConditionTest
     : public CppUnit::TestFixture
 {
 public:
-    CPPUNIT_TEST_SUITE(LockTest);
+    CPPUNIT_TEST_SUITE(ConditionTest);
 
-      CPPUNIT_TEST(testMutexLock);
-      CPPUNIT_TEST(testRecursiveMutexLock);
+      CPPUNIT_TEST(testConditionMutex);
+      CPPUNIT_TEST(testConditionRecursiveMutex);
 
     CPPUNIT_TEST_SUITE_END();
 
 private:
 
-  void testMutexLock()
+  void testConditionMutex()
   {
-    twine::mutex m;
-
-    // Test scoped locking
-    CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
-    m.unlock();
-    {
-      twine::lock<twine::mutex> l(m);
-      CPPUNIT_ASSERT_EQUAL(false, m.try_lock());
-    }
-    CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
-    m.unlock();
+    // FIXME needs threads, so finish those
+    CPPUNIT_FAIL("not yet implemented");
   }
 
 
-  void testRecursiveMutexLock()
+  void testConditionRecursiveMutex()
   {
-    twine::recursive_mutex m;
-
-    // Test scoped locking
-    CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
-    {
-      twine::lock<twine::recursive_mutex> l(m);
-      CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
-    }
-    CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
-    m.unlock();
+    // FIXME needs threads, so finish those
+    CPPUNIT_FAIL("not yet implemented");
   }
 };
 
 
-CPPUNIT_TEST_SUITE_REGISTRATION(LockTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(ConditionTest);
