@@ -17,8 +17,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#ifndef TWINE_LOCK_H
-#define TWINE_LOCK_H
+#ifndef TWINE_SCOPED_LOCK_H
+#define TWINE_SCOPED_LOCK_H
 
 #ifndef __cplusplus
 #error You are trying to include a C++ only header file
@@ -29,6 +29,16 @@
 #include <twine/mutex.h>
 
 namespace twine {
+
+/**
+ * Forward declaration
+ **/
+namespace detail {
+
+template <typename T, typename U>
+struct unwrap_handle;
+
+} // namespace detail
 
 /**
  * Scoped lock for mutexes.
@@ -47,21 +57,40 @@ namespace twine {
 template <
   typename mutexT
 >
-class lock
+class scoped_lock
 {
 public:
-  lock(mutexT & mutex)
+  scoped_lock(mutexT & mutex)
     : m_mutex(mutex)
   {
     m_mutex.lock();
   }
 
-  ~lock()
+  ~scoped_lock()
   {
     m_mutex.unlock();
   }
 
+  inline void lock()
+  {
+    m_mutex.lock();
+  }
+
+  inline bool try_lock()
+  {
+    return m_mutex.try_lock();
+  }
+
+  inline void unlock()
+  {
+    m_mutex.unlock();
+  }
+
+
 private:
+  template <typename T, typename U>
+  friend struct detail::unwrap_handle;
+
   mutexT & m_mutex;
 };
 
