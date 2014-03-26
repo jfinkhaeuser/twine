@@ -47,19 +47,19 @@ private:
       // Value of 0
       {
         T n(0);
-        CPPUNIT_ASSERT_EQUAL(twine::chrono::usec_t(0), n.raw());
+        CPPUNIT_ASSERT_EQUAL(twine::chrono::nsec_t(0), n.raw());
       }
 
       // Value of 1
       {
         T n(1);
-        CPPUNIT_ASSERT_EQUAL(twine::chrono::usec_t(1), n.raw());
+        CPPUNIT_ASSERT_EQUAL(twine::chrono::nsec_t(1), n.raw());
       }
 
       // Maximum value
       {
-        T n(~twine::chrono::usec_t(0));
-        CPPUNIT_ASSERT_EQUAL(~twine::chrono::usec_t(0), n.raw());
+        T n(~twine::chrono::nsec_t(0));
+        CPPUNIT_ASSERT_EQUAL(~twine::chrono::nsec_t(0), n.raw());
       }
     }
 
@@ -77,13 +77,13 @@ private:
 
     template <
       typename testT,
-      twine::chrono::usec_t VALUE,
-      twine::chrono::usec_t NANOSEC,
-      twine::chrono::usec_t MICROSEC,
-      twine::chrono::usec_t MILLISEC,
-      twine::chrono::usec_t SEC,
-      twine::chrono::usec_t MIN,
-      twine::chrono::usec_t HOUR
+      twine::chrono::nsec_t VALUE,
+      twine::chrono::nsec_t NANOSEC,
+      twine::chrono::nsec_t MICROSEC,
+      twine::chrono::nsec_t MILLISEC,
+      twine::chrono::nsec_t SEC,
+      twine::chrono::nsec_t MIN,
+      twine::chrono::nsec_t HOUR
     >
     void testConversionImpl()
     {
@@ -97,6 +97,12 @@ private:
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), SEC,      n.template as<tc::seconds>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), MIN,      n.template as<tc::minutes>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), HOUR,     n.template as<tc::hours>());
+
+      // The timespec value is always the same
+      ::timespec t;
+      n.as(t);
+      CPPUNIT_ASSERT_EQUAL(time_t(3600), t.tv_sec);
+      CPPUNIT_ASSERT_EQUAL(long(0), t.tv_nsec);
     }
 
     void testConversion()

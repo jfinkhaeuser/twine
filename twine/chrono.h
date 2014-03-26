@@ -26,6 +26,8 @@
 
 #include <twine/twine.h>
 
+#include <time.h>
+
 #include <meta/math.h>
 
 
@@ -35,7 +37,7 @@ namespace chrono {
 /**
  * Microsecond type.
  **/
-typedef int64_t usec_t;
+typedef int64_t nsec_t;
 
 
 /**
@@ -43,6 +45,13 @@ typedef int64_t usec_t;
  **/
 namespace detail {
 
+// Standard ratios
+typedef ::meta::math::ratio<nsec_t, 1, 1000000000>  nanosecond_ratio;  // Ratio for the unit nanoseconds.
+typedef ::meta::math::ratio<nsec_t, 1, 1000000>     microsecond_ratio; // Ratio for the unit microseconds.
+typedef ::meta::math::ratio<nsec_t, 1, 1000>        millisecond_ratio; // Ratio for the unit milliseconds.
+typedef ::meta::math::ratio<nsec_t, 1>              second_ratio;      // Ratio for the unit seconds.
+typedef ::meta::math::ratio<nsec_t, 60>             minute_ratio;      // Ratio for the unit minutes.
+typedef ::meta::math::ratio<nsec_t, 3600>           hour_ratio;        // Ratio for the unit hours.
 
 /**
  * Minimal implementation of a chrono::duration class similar to the C++11
@@ -78,28 +87,33 @@ struct duration
     return (m_repr * final_ratio_t::DIVIDEND) / final_ratio_t::DIVISOR;
   }
 
+  inline void as(::timespec & spec)
+  {
+    typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
+    spec.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND) / second_ratio_t::DIVISOR);
+
+    typedef typename ::meta::math::invert<second_ratio_t>::type inverse_t;
+    nsec_t remainder = m_repr - ((nsec_t(spec.tv_sec) * inverse_t::DIVIDEND) / inverse_t::DIVISOR);
+
+    typedef ::meta::math::divide_ratios<ratioT, nanosecond_ratio> nanosecond_ratio_t;
+    spec.tv_nsec = long((remainder * nanosecond_ratio_t::DIVIDEND) / nanosecond_ratio_t::DIVISOR);
+  }
+
 private:
 
   reprT m_repr;
 };
 
-// Standard ratios
-typedef ::meta::math::ratio<usec_t, 1, 1000000000>  nanosecond_ratio;  // Ratio for the unit nanoseconds.
-typedef ::meta::math::ratio<usec_t, 1, 1000000>     microsecond_ratio; // Ratio for the unit microseconds.
-typedef ::meta::math::ratio<usec_t, 1, 1000>        millisecond_ratio; // Ratio for the unit milliseconds.
-typedef ::meta::math::ratio<usec_t, 1>              second_ratio;      // Ratio for the unit seconds.
-typedef ::meta::math::ratio<usec_t, 60>             minute_ratio;      // Ratio for the unit minutes.
-typedef ::meta::math::ratio<usec_t, 3600>           hour_ratio;        // Ratio for the unit hours.
 
 } // namespace detail
 
 // Standard duration types.
-typedef detail::duration<usec_t, detail::nanosecond_ratio>  nanoseconds;  // Duration with the unit nanoseconds.
-typedef detail::duration<usec_t, detail::microsecond_ratio> microseconds; // Duration with the unit microseconds.
-typedef detail::duration<usec_t, detail::millisecond_ratio> milliseconds; // Duration with the unit milliseconds.
-typedef detail::duration<usec_t, detail::second_ratio>      seconds;      // Duration with the unit seconds.
-typedef detail::duration<usec_t, detail::minute_ratio>      minutes;      // Duration with the unit minutes.
-typedef detail::duration<usec_t, detail::hour_ratio>        hours;        // Duration with the unit hours.
+typedef detail::duration<nsec_t, detail::nanosecond_ratio>  nanoseconds;  // Duration with the unit nanoseconds.
+typedef detail::duration<nsec_t, detail::microsecond_ratio> microseconds; // Duration with the unit microseconds.
+typedef detail::duration<nsec_t, detail::millisecond_ratio> milliseconds; // Duration with the unit milliseconds.
+typedef detail::duration<nsec_t, detail::second_ratio>      seconds;      // Duration with the unit seconds.
+typedef detail::duration<nsec_t, detail::minute_ratio>      minutes;      // Duration with the unit minutes.
+typedef detail::duration<nsec_t, detail::hour_ratio>        hours;        // Duration with the unit hours.
 
 }} // namespace twine::chrono
 
