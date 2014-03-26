@@ -15,4 +15,6 @@ include_HEADERS = \
 	twine-config.h \
 	version.h \
 	mutex.h \
+	chrono.h \
+	thread.h \
 	condition.h

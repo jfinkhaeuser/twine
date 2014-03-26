@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: twine
-Description: FIXME
-Requires: FIXME
+Description: Twine is a very small threading library for C++.
+Requires: meta >= 0.1
 Version: @PACKAGE_VERSION@
-Libs: @PTHREAD_LIBS@
-Cflags: -I${includedir}/twine @PTHREAD_CFLAGS@
+Libs: @PTHREAD_LIBS@ @META_LIBS@
+Cflags: -I${includedir} @PTHREAD_CFLAGS@

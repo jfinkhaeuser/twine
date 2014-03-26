@@ -6,11 +6,13 @@ check_PROGRAMS = $(TESTS)
 testsuite_CPPFLAGS = $(CPPUNIT_CFLAGS)
 testsuite_LDADD = \
 	$(CPPUNIT_LIBS) \
-	$(PTHREAD_LIBS)
+	$(PTHREAD_LIBS) \
+	$(META_LIBS)
 
 testsuite_SOURCES = \
 	test_mutex.cpp \
 	test_lock.cpp \
-	test_condition.cpp \
+	test_chrono.cpp \
 	test_thread.cpp \
+	test_condition.cpp \
 	testsuite.cpp

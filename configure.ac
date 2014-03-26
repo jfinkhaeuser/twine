@@ -4,19 +4,18 @@ AC_PREREQ([2.68])
 LT_PREREQ([2.4])
 
 AC_INIT([twine], [0.1], [jens@unwesen.co.uk])
+AM_INIT_AUTOMAKE([twine], [1.11.1])
 AC_CONFIG_SRCDIR([twine])
-AC_CONFIG_HEADERS([twine/twine-config.h])
+AC_CONFIG_HEADER([twine/_config.h])
+AX_PREFIX_CONFIG_H([twine/twine-config.h])
 
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_MACRO_DIR([m4])
-
-AM_INIT_AUTOMAKE([1.11.1])
 
 AC_LANG_CPLUSPLUS
 
@@ -37,6 +36,7 @@ AM_CONDITIONAL([HAVE_WIN32], [test "x$target" == win32])
 ##############################################################################
 # Checks for programs.
 AC_PROG_CXX
+PKG_PROG_PKG_CONFIG
 
 ##############################################################################
 # Checks for compiler characteristics
@@ -50,6 +50,7 @@ AU_ALIAS([AC_COMPILE_STDCXX_0X], [AX_CXX_COMPILE_STDCXX_0X])
 # Checks for libraries.
 AX_PTHREAD()
 PKG_CHECK_MODULES([CPPUNIT], [cppunit >= 1.12])
+PKG_CHECK_MODULES([META], [meta >= 0.1])
 
 ##############################################################################
 # Checks for header files.

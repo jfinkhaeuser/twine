@@ -50,7 +50,7 @@ namespace twine {
  **/
 inline std::pair<std::string, std::string> version()
 {
-  return std::make_pair<std::string, std::string>(PACKAGE_MAJOR, PACKAGE_MINOR);
+  return std::make_pair<std::string, std::string>(TWINE_PACKAGE_MAJOR, TWINE_PACKAGE_MINOR);
 }
 
 
@@ -59,7 +59,7 @@ inline std::pair<std::string, std::string> version()
  **/
 inline char const * const copyright_string()
 {
-  static auto ret = PACKAGE_NAME " " PACKAGE_VERSION " " PACKAGE_URL "\n"
+  static auto ret = TWINE_PACKAGE_NAME " " TWINE_PACKAGE_VERSION " " TWINE_PACKAGE_URL "\n"
     "Copyright (c) 2014 Unwesen Ltd.\n"
     "Licensed under the the GPLv3 for personal, educational or non-profit use.\n"
     "Other licensing options available; please contact the copyright holder for\n"
