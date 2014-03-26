@@ -39,6 +39,7 @@ mutex_base<recursion_policyT>::mutex_base()
   pthread_mutexattr_init(&attr);
   recursion_policyT::set_attributes(&attr);
   pthread_mutex_init(&m_handle, &attr);
+  pthread_mutexattr_destroy(&attr);
 }
 
 

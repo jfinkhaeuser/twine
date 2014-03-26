@@ -30,6 +30,16 @@
 namespace twine {
 
 /**
+ * Forward declaration
+ **/
+namespace detail {
+
+template <typename T, typename U>
+struct unwrap_handle;
+
+} // namespace detail
+
+/**
  * Mutex class
  *
  * This is a mutual exclusion object for synchronizing access to shared
@@ -59,6 +69,9 @@ public:
 private:
   mutex_base(mutex_base const &) = delete;
   mutex_base & operator=(mutex_base const &) = delete;
+
+  template <typename T, typename U>
+  friend struct detail::unwrap_handle;
 
 #if defined(TWINE_WIN32)
   CRITICAL_SECTION  m_handle;
