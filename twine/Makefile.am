@@ -2,16 +2,7 @@ include $(top_srcdir)/common.mk
 
 SUBDIRS = .
 
-if HAVE_POSIX
-SUBDIRS += posix
-endif
-
-if HAVE_WIN32
-SUBDIRS += win32
-endif
-
-include_twinedir = $(includedir)/twine
-include_twine_HEADERS = \
+pkginclude_HEADERS = \
 	twine.h \
 	twine-config.h \
 	version.h \
@@ -19,3 +10,17 @@ include_twine_HEADERS = \
 	chrono.h \
 	thread.h \
 	condition.h
+
+if HAVE_POSIX
+nobase_pkginclude_HEADERS = \
+	posix/mutex.h \
+	posix/mutex_policy.h \
+	posix/condition.h
+endif
+
+if HAVE_WIN32
+nobase_pkginclude_HEADERS = \
+	win32/mutex.h \
+	win32/mutex_policy.h \
+	win32/condition.h
+endif

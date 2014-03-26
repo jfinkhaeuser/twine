@@ -30,8 +30,8 @@ case $target_os in
     target=win32
     ;;
 esac
-AM_CONDITIONAL([HAVE_POSIX], [test "x$target" == posix])
-AM_CONDITIONAL([HAVE_WIN32], [test "x$target" == win32])
+AM_CONDITIONAL([HAVE_POSIX], [test "x$target" == xposix])
+AM_CONDITIONAL([HAVE_WIN32], [test "x$target" == xwin32])
 
 ##############################################################################
 # Checks for programs.
