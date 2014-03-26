@@ -26,6 +26,7 @@
 
 #include <twine/twine.h>
 
+#include <sys/types.h>
 #include <time.h>
 
 #include <meta/math.h>
@@ -87,7 +88,7 @@ struct duration
     return (m_repr * final_ratio_t::DIVIDEND) / final_ratio_t::DIVISOR;
   }
 
-  inline void as(::timespec & spec)
+  inline void as(::timespec & spec) const
   {
     typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
     spec.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND) / second_ratio_t::DIVISOR);
