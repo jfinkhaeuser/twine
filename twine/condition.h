@@ -58,14 +58,15 @@ public:
   condition();
   ~condition();
 
-  // Main interface
+  // Main interface. Use with mutexes or scoped locks, and durations
+  // defined in chrono.h
   template <typename lockableT>
   inline void wait(lockableT & lockable);
 
   template <typename lockableT, typename durationT>
   inline bool timed_wait(lockableT & lockable, durationT const & duration);
 
-  // Notify
+  // Notify waiting threads
   inline void notify_one();
   inline void notify_all();
 
