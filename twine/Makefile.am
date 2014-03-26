@@ -10,7 +10,8 @@ if HAVE_WIN32
 SUBDIRS += win32
 endif
 
-include_HEADERS = \
+include_twinedir = $(includedir)/twine
+include_twine_HEADERS = \
 	twine.h \
 	twine-config.h \
 	version.h \
