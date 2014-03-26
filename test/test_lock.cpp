@@ -20,7 +20,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <twine/lock.h>
+#include <twine/scoped_lock.h>
 
 
 class LockTest
@@ -44,7 +44,7 @@ private:
     CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
     m.unlock();
     {
-      twine::lock<twine::mutex> l(m);
+      twine::scoped_lock<twine::mutex> l(m);
       CPPUNIT_ASSERT_EQUAL(false, m.try_lock());
     }
     CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
@@ -59,7 +59,7 @@ private:
     // Test scoped locking
     CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
     {
-      twine::lock<twine::recursive_mutex> l(m);
+      twine::scoped_lock<twine::recursive_mutex> l(m);
       CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
     }
     CPPUNIT_ASSERT_EQUAL(true, m.try_lock());
