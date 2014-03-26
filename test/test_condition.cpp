@@ -39,15 +39,56 @@ private:
 
   void testConditionMutex()
   {
-    // FIXME needs threads, so finish those
-    CPPUNIT_FAIL("not yet implemented");
+    twine::condition cond;
+    twine::chrono::milliseconds wait(50);
+
+    // Since we don't have several threads, we expect timed_wait() to time out
+    {
+      twine::mutex m;
+      bool ret = cond.timed_wait(m, wait);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
+    // The same with a lock
+    {
+      twine::mutex m;
+      twine::scoped_lock<twine::mutex> l(m);
+      l.unlock();
+      bool ret = cond.timed_wait(l, wait);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
+    // XXX We can't notify first and then wait, so we'll have to skip further
+    //     tests here.
+    CPPUNIT_FAIL("not fully implemented yet.");
   }
 
 
   void testConditionRecursiveMutex()
   {
-    // FIXME needs threads, so finish those
-    CPPUNIT_FAIL("not yet implemented");
+    twine::condition cond;
+    twine::chrono::milliseconds wait(50);
+
+    // Since we don't have several threads, we expect timed_wait() to time out
+    {
+      twine::recursive_mutex m;
+      bool ret = cond.timed_wait(m, wait);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
+    // The same with a lock
+    {
+      twine::recursive_mutex m;
+      twine::scoped_lock<twine::recursive_mutex> l(m);
+      l.unlock();
+      bool ret = cond.timed_wait(l, wait);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
+
+    // XXX We can't notify first and then wait, so we'll have to skip further
+    //     tests here.
+    CPPUNIT_FAIL("not fully implemented yet.");
   }
 };
 

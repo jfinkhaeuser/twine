@@ -27,6 +27,8 @@
 #include <twine/twine.h>
 
 #include <twine/mutex.h>
+#include <twine/scoped_lock.h>
+#include <twine/chrono.h>
 
 namespace twine {
 
@@ -57,8 +59,11 @@ public:
   ~condition();
 
   // Main interface
-  template <typename mutexT>
-  inline void wait(mutexT & mutex);
+  template <typename lockableT>
+  inline void wait(lockableT & lockable);
+
+  template <typename lockableT, typename durationT>
+  inline bool timed_wait(lockableT & lockable, durationT const & duration);
 
   // Notify
   inline void notify_one();
