@@ -66,12 +66,16 @@ private:
 
   void testConditionRecursiveMutex()
   {
+    // XXX recursive mutexes (seemingly) need to be locked before we can 
+    //     wait on them.
+
     twine::condition cond;
     twine::chrono::milliseconds wait(50);
 
     // Since we don't have several threads, we expect timed_wait() to time out
     {
       twine::recursive_mutex m;
+      m.lock();
       bool ret = cond.timed_wait(m, wait);
       CPPUNIT_ASSERT_EQUAL(false, ret);
     }
@@ -80,7 +84,6 @@ private:
     {
       twine::recursive_mutex m;
       twine::scoped_lock<twine::recursive_mutex> l(m);
-      l.unlock();
       bool ret = cond.timed_wait(l, wait);
       CPPUNIT_ASSERT_EQUAL(false, ret);
     }
