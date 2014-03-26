@@ -17,8 +17,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#ifndef TWINE_DETAIL_MUTEX_POLICY_WIN32_H
-#define TWINE_DETAIL_MUTEX_POLICY_WIN32_H
+#ifndef TWINE_WIN32_MUTEX_POLICY_H
+#define TWINE_WIN32_MUTEX_POLICY_H
 
 #ifndef __cplusplus
 #error You are trying to include a C++ only header file

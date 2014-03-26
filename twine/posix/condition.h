@@ -17,8 +17,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#ifndef TWINE_DETAIL_CONDITION_POSIX_H
-#define TWINE_DETAIL_CONDITION_POSIX_H
+#ifndef TWINE_POSIX_CONDITION_H
+#define TWINE_POSIX_CONDITION_H
 
 #ifndef __cplusplus
 #error You are trying to include a C++ only header file
