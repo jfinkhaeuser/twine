@@ -17,13 +17,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#include <twine/twine.h>
+#include <twine/thread.h>
 
 #include <exception>
 
 #include <meta/nullptr.h>
 
-#include <twine/thread.h>
 #include <twine/scoped_lock.h>
 
 namespace twine {
