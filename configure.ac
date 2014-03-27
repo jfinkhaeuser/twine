@@ -44,6 +44,15 @@ AC_C_BIGENDIAN
 
 # The AU_ALIAS is needed due to a bug in AX_CXX_HEADER_STDCXX_0X, etc.
 AX_CXX_COMPILE_STDCXX_0X
+if test "$ax_cv_cxx_compile_cxx0x_native" != yes ; then
+  if test "$ax_cv_cxx_compile_cxx0x_gxx" = yes ; then
+    AC_SUBST([TWINE_CXX0X_FLAG], [-std=gnu++0x])
+  fi
+  if test "$ax_cv_cxx_compile_cxx0x_cxx" = yes ; then
+    AC_SUBST([TWINE_CXX0X_FLAG], [-std=c++0x])
+  fi
+fi
+
 AU_ALIAS([AC_COMPILE_STDCXX_0X], [AX_CXX_COMPILE_STDCXX_0X])
 
 ##############################################################################
