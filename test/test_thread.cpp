@@ -25,6 +25,7 @@
 #include <sys/time.h>
 
 #include <twine/chrono.h>
+#include <twine/scoped_lock.h>
 
 #define THREAD_TEST_LONG_DELAY  twine::chrono::milliseconds(1)
 #define THREAD_TEST_SHORT_DELAY twine::chrono::microseconds(100)
@@ -34,6 +35,7 @@ namespace {
 struct baton
 {
   int count;
+  twine::mutex m;
   baton(int _count = 0)
     : count(_count)
   {
@@ -41,14 +43,18 @@ struct baton
 };
 
 
-void thread_incr(void * b)
+void thread_incr(void * arg)
 {
-  ++(static_cast<baton *>(b)->count);
+  baton * b = static_cast<baton *>(arg);
+  twine::scoped_lock<twine::mutex> lock(b->m);
+  ++(b->count);
 }
 
-void thread_decr(void * b)
+void thread_decr(void * arg)
 {
-  --(static_cast<baton *>(b)->count);
+  baton * b = static_cast<baton *>(arg);
+  twine::scoped_lock<twine::mutex> lock(b->m);
+  --(b->count);
 }
 
 void thread_sleep(void *)
