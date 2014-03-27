@@ -66,6 +66,7 @@ public:
 
       CPPUNIT_TEST(testThisThread);
       CPPUNIT_TEST(testSingleThread);
+      CPPUNIT_TEST(testMultipleThreads);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -200,6 +201,57 @@ private:
       }
     }
 
+
+
+    void testMultipleThreads()
+    {
+      baton b;
+
+      // First test that the baton actually gets it's counter incremented.
+      {
+        CPPUNIT_ASSERT_EQUAL(int(0), b.count);
+
+        twine::thread th0(thread_incr, &b);
+
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
+
+        th0.join();
+
+        // Should be incremented by one
+        CPPUNIT_ASSERT_EQUAL(int(1), b.count);
+      }
+
+      // Next, test decrementing the counter
+      {
+        CPPUNIT_ASSERT_EQUAL(int(1), b.count);
+
+        twine::thread th0(thread_decr, &b);
+
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
+
+        th0.join();
+
+        // Should be decremented by one
+        CPPUNIT_ASSERT_EQUAL(int(0), b.count);
+      }
+
+      // Last, do both concurrently
+      {
+        CPPUNIT_ASSERT_EQUAL(int(0), b.count);
+
+        twine::thread th0(thread_incr, &b);
+        twine::thread th1(thread_decr, &b);
+
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
+
+        th0.join();
+        th1.join();
+
+        // After both threads have been successfully joined, the baton's counter
+        // should still be zero - incremented once and decremented once
+        CPPUNIT_ASSERT_EQUAL(int(0), b.count);
+      }
+    }
 };
 
 
