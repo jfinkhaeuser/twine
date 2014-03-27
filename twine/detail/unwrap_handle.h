@@ -61,7 +61,7 @@ struct unwrap_handle<handleT, recursive_mutex>
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, scoped_lock<mutex>>
+struct unwrap_handle<handleT, scoped_lock<mutex> >
 {
   inline static handleT & get(scoped_lock<mutex> & lock)
   {
@@ -70,7 +70,7 @@ struct unwrap_handle<handleT, scoped_lock<mutex>>
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, scoped_lock<recursive_mutex>>
+struct unwrap_handle<handleT, scoped_lock<recursive_mutex> >
 {
   inline static handleT & get(scoped_lock<recursive_mutex> & lock)
   {
