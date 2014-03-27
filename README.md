@@ -38,5 +38,6 @@ Features
 Requirements
 ------------
 
-- Twine uses [CppUnit](http://cppunit.sourceforge.net) _for unit tests only_
-- Twine uses a very limited subset of [meta](https://github.com/jfinkhaeuser/meta)
+- Twine uses [CppUnit](http://cppunit.sourceforge.net) _for unit tests only_.
+- Twine uses a very limited subset of [meta](https://github.com/jfinkhaeuser/meta).
+  It's so limited it's barely necessary, but hey, `pkg-config` makes it easy!
