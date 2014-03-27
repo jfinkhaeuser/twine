@@ -20,11 +20,30 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <twine/mutex.h>
+#include <twine/thread.h>
 
 
 namespace {
 
+struct baton
+{
+  int count;
+  baton(int _count = 0)
+    : count(_count)
+  {
+  }
+};
+
+
+void thread_incr(void * b)
+{
+  ++(static_cast<baton *>(b)->count);
+}
+
+void thread_decr(void * b)
+{
+  --(static_cast<baton *>(b)->count);
+}
 
 } // anonymous namespace
 
@@ -34,13 +53,75 @@ class ThreadTest
 public:
     CPPUNIT_TEST_SUITE(ThreadTest);
 
-//      CPPUNIT_TEST(testComparison);
-//      CPPUNIT_TEST(testDynamicFor);
-//      CPPUNIT_TEST(testStaticFor);
+      CPPUNIT_TEST(testSingleThread);
 
     CPPUNIT_TEST_SUITE_END();
 
 private:
+
+    void testSingleThread()
+    {
+      // Creation auto-starts
+      {
+        baton b;
+        twine::thread th(thread_incr, &b);
+        CPPUNIT_ASSERT_EQUAL(true, th.joinable());
+        th.join(); // XXX must do this or it all crashes
+      }
+
+      // Skip auto-start
+      {
+        baton b;
+        twine::thread th(thread_incr, &b, false);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+      }
+
+      // Start and detach immediately
+      {
+        baton b;
+        twine::thread th(thread_incr, &b, true, true);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+      }
+
+      // Create without func
+      {
+        baton b;
+        twine::thread th;
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+      }
+
+      // Create, add func later
+      {
+        baton b;
+        twine::thread th;
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        th.set_func(thread_incr, &b);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+      }
+
+      // Create, start later
+      {
+        baton b;
+        twine::thread th;
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        th.set_func(thread_incr, &b);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        th.start();
+        CPPUNIT_ASSERT_EQUAL(true, th.joinable());
+        th.join(); // XXX must do this or it all crashes
+      }
+
+      // Create, start & detach later
+      {
+        baton b;
+        twine::thread th;
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        th.set_func(thread_incr, &b);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        th.start(true);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+      }
+    }
 
 };
 

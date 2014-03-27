@@ -5,6 +5,7 @@ check_PROGRAMS = $(TESTS)
 
 testsuite_CPPFLAGS = $(CPPUNIT_CFLAGS)
 testsuite_LDADD = \
+	$(top_builddir)/twine/libtwine.la \
 	$(CPPUNIT_LIBS) \
 	$(PTHREAD_LIBS) \
 	$(META_LIBS)
