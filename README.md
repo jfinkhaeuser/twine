@@ -31,7 +31,8 @@ Features
   free, but can get a license for commercial software, too.
 - Very portable - tested under Windows, Mac OS X, Linux, FreeBSD and should
   work under most POSIX compatible systems.
-- Still fairly faithful to the C++11 standard.
+- Still relatively faithful to the C++11 standard. That doesn't mean the entire
+  standard's thread-related scope is implemented.
 - Minimal overhead - most functions generate compact inline code.
 
 
