@@ -55,4 +55,7 @@
   #include <pthread.h>
 #endif
 
+// Meta-related defines
+#define META_NEED_NULLPTR_COMPATIBILITY
+
 #endif // guard

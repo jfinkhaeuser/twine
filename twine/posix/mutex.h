@@ -33,7 +33,7 @@ template <
   typename recursion_policyT
 >
 mutex_base<recursion_policyT>::mutex_base()
-  : m_handle(PTHREAD_MUTEX_INITIALIZER)
+  : m_handle()
 {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);

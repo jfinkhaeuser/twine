@@ -27,13 +27,16 @@
 #include <twine/twine.h>
 
 #include <sys/time.h>
+#include <errno.h>
+
+#include <meta/nullptr.h>
 
 #include <twine/detail/unwrap_handle.h>
 
 namespace twine {
 
 condition::condition()
-  : m_handle(PTHREAD_COND_INITIALIZER)
+  : m_handle()
 {
   pthread_condattr_t attr;
   pthread_condattr_init(&attr);
@@ -65,7 +68,7 @@ bool
 condition::timed_wait(lockableT & lockable, durationT const & duration)
 {
   ::timeval now;
-  ::gettimeofday(&now, NULL);
+  ::gettimeofday(&now, nullptr);
 
   ::timespec wakeup;
   duration.as(wakeup);

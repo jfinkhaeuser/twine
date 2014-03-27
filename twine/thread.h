@@ -26,7 +26,7 @@
 
 #include <twine/twine.h>
 
-#include <meta/noncopyable.h>
+#include <twine/noncopyable.h>
 
 #include <twine/mutex.h>
 
@@ -61,7 +61,7 @@ namespace twine {
  * At least this way it'll fail loudly.
  **/
 class thread
-  : public meta::noncopyable
+  : public twine::noncopyable
 {
 public:
   // Typedef for the function type threads can run.

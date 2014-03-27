@@ -26,7 +26,7 @@
 
 #include <twine/twine.h>
 
-#include <meta/noncopyable.h>
+#include <twine/noncopyable.h>
 
 namespace twine {
 
@@ -54,7 +54,7 @@ template <
   typename recursion_policyT
 >
 class mutex_base
-  : public meta::noncopyable
+  : public twine::noncopyable
 {
 public:
   // Constructor/destructor
