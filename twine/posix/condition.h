@@ -75,7 +75,7 @@ condition::timed_wait(lockableT & lockable, durationT const & duration)
 
   wakeup.tv_sec += now.tv_sec;
   wakeup.tv_nsec += now.tv_usec * 1000;
-  while (wakeup.tv_nsec > 1000000000) {
+  while (wakeup.tv_nsec >= 1000000000) {
     ++wakeup.tv_sec;
     wakeup.tv_nsec -= 1000000000;
   }
