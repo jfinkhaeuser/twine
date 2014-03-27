@@ -48,47 +48,19 @@ namespace twine {
  * either the branch name and subversion revision (development builds), or the
  * major and minor version numbers (release builds).
  **/
-inline std::pair<std::string, std::string> version()
-{
-  return std::make_pair<std::string, std::string>(TWINE_PACKAGE_MAJOR, TWINE_PACKAGE_MINOR);
-}
+std::pair<std::string, std::string> version();
 
 
 /**
  * Return the library version as a string, with appropriate copyright notice.
  **/
-inline char const * const copyright_string()
-{
-  static auto ret = TWINE_PACKAGE_NAME " " TWINE_PACKAGE_VERSION " " TWINE_PACKAGE_URL "\n"
-    "Copyright (c) 2014 Unwesen Ltd.\n"
-    "Licensed under the the GPLv3 for personal, educational or non-profit use.\n"
-    "Other licensing options available; please contact the copyright holder for\n"
-    "information."
-    ;
-  return ret;
-}
+char const * const copyright_string();
 
 
 /**
  * Returns a short string with licensing information.
  **/
-inline char const * const license_string()
-{
-  static auto ret =
-    "This software is licensed under the terms of the GNU GPLv3 for personal,\n"
-    "educational and non-profit use. For all other uses, alternative license\n"
-    "options are available. Please contact the copyright holder for additional\n"
-    "information, stating your intended usage.\n"
-    "\n"
-    "You can find the full text of the GPLv3 in the COPYING file in this code\n"
-    "distribution.\n"
-    "\n"
-    "This software is distributed on an \"AS IS\" BASIS, WITHOUT ANY WARRANTY;\n"
-    "without even the implied warranty of MERCHANTABILITY or FITNESS FOR A\n"
-    "PARTICULAR PURPOSE."
-    ;
-  return ret;
-}
+char const * const license_string();
 
 } // namespace twine
 

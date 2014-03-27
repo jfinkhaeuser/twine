@@ -35,7 +35,8 @@ libtwine_la_CPPFLAGS = $(DEPS_CFLAGS)
 libtwine_la_LIBADD = $(DEPS_LIBS)
 libtwine_la_LDFLAGS = -version-info 1:0:0
 
-libtwine_la_SOURCES =
+libtwine_la_SOURCES = \
+	version.cpp
 
 if HAVE_POSIX
 libtwine_la_SOURCES += \
