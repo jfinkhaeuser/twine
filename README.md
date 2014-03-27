@@ -9,7 +9,7 @@ let's blatantly steal from that project's description:
 > Need portable threads for your C++ app? Is C++11 unavailable for your target
 > compiler(s)? Is Boost too large?
 
-So why start twine if there's `TinyThread++` already meets those requirements?
+So why start twine if `TinyThread++` already meets those requirements?
 
 - Twine extends what the C++ standard requires to address a number of
   shortcomings in the standard (and also `TinyThread++`).
