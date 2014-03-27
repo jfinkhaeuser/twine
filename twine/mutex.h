@@ -26,6 +26,7 @@
 
 #include <twine/twine.h>
 
+#include <meta/noncopyable.h>
 
 namespace twine {
 
@@ -53,6 +54,7 @@ template <
   typename recursion_policyT
 >
 class mutex_base
+  : public meta::noncopyable
 {
 public:
   // Constructor/destructor
@@ -67,9 +69,6 @@ public:
   inline void unlock();
 
 private:
-  mutex_base(mutex_base const &) = delete;
-  mutex_base & operator=(mutex_base const &) = delete;
-
   template <typename T, typename U>
   friend struct detail::unwrap_handle;
 
