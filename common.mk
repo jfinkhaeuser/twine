@@ -7,3 +7,7 @@ AM_CXXFLAGS += -g --std=c++0x
 # Dependencies XXX keep these in sync with twine.pc.in
 AM_CXXFLAGS += $(PTHREAD_CFLAGS) $(META_CFLAGS)
 # AM_LDFLAGS += 
+
+# Build object files in subdirectories so we can support platform-dependent
+# builds
+AUTOMAKE_OPTIONS = subdir-objects
