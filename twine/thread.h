@@ -30,6 +30,9 @@
 
 #include <twine/mutex.h>
 
+#if defined(TWINE_HAVE_NANOSLEEP)
+#  include <time.h>
+#endif
 
 namespace twine {
 
@@ -64,14 +67,20 @@ class thread
   : public twine::noncopyable
 {
 public:
+  /***************************************************************************
+   * Typedefs
+   **/
   // Typedef for the function type threads can run.
-  typedef void (*function_type)(void *);
+  typedef void (*function)(void *);
+
+  // Thread ID
+  typedef int64_t id;
 
   /***************************************************************************
    * Constructor/destructor
    **/
   thread();
-  thread(function_type func, void * baton, bool start_now = true,
+  thread(function func, void * baton, bool start_now = true,
       bool detach_now = false);
 
   ~thread();
@@ -101,6 +110,14 @@ public:
    **/
   void detach();
 
+  /**
+   * Get the thread ID; every thread has one. Returns bad_thread_id if the
+   * thread object is not currently attached to an execution thread.
+   **/
+  static id const bad_thread_id;
+  id get_id() const;
+
+
   /***************************************************************************
    * Extended functionality
    **/
@@ -109,7 +126,7 @@ public:
    * objects by setting a thread function and calling start() below. Note that
    * set_func() fails (returns false) if the thread object is currently joinable.
    **/
-  bool set_func(function_type func, void * baton);
+  bool set_func(function func, void * baton);
 
   /**
    * If the thread was constructed with start_now = false, or was joined and
@@ -119,6 +136,7 @@ public:
    * See detach() for a description on the detach_now parameter.
    **/
   void start(bool detach_now = false);
+
 
   /***************************************************************************
    * Forward declarations
@@ -141,6 +159,37 @@ private:
 
 };
 
+
+namespace this_thread {
+
+/**
+ * Same as thread::get_id() except returns thread ID of the calling thread.
+ **/
+thread::id get_id();
+
+/**
+ * Yield execution to another thread. Throws std::runtime_error() if yielding
+ * is not possible on the given platform.
+ **/
+void yield();
+
+/**
+ * Put the calling thread to sleep for the duration given in the period.
+ **/
+template <typename periodT>
+void
+sleep_for(periodT const & period)
+{
+#if defined(TWINE_HAVE_NANOSLEEP)
+  ::timespec spec;
+  period.as(spec);
+  ::nanosleep(&spec, nullptr);
+#else
+#  error unimplemented
+#endif
+}
+
+} // namespace this_thread
 
 } // namespace twine
 

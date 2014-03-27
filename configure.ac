@@ -18,6 +18,7 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 
 ##############################################################################
 # Make build target available to automake
@@ -80,14 +81,19 @@ AC_TYPE_SSIZE_T
 
 ##############################################################################
 # Checks for library functions.
-# AC_CHECK_FUNCS([gettimeofday])
+JF_CHECK_FUNC_IN([unistd.h sys/syscall.h sys/types.h], [gettid],
+    [int foo = syscall(SYS_gettid);])
+JF_CHECK_FUNC_IN([pthread.h], [pthread_getthreadid_np],
+    [int foo = pthread_getthreadid_np();])
+JF_CHECK_FUNC_IN([sched.h], [sched_yield], [sched_yield();])
+JF_CHECK_FUNC_IN([time.h], [nanosleep], [nanosleep(NULL, NULL);])
+
 
 ##############################################################################
 # Optional programs
 
 ##############################################################################
 # Variable substitions
-AX_SPLIT_VERSION
 AC_DEFINE_UNQUOTED([PACKAGE_MAJOR], ["$AX_MAJOR_VERSION"], [Define to the major
     version of this package.])
 AC_DEFINE_UNQUOTED([PACKAGE_MINOR], ["$AX_MINOR_VERSION"], [Define to the minor

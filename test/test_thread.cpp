@@ -22,6 +22,10 @@
 
 #include <twine/thread.h>
 
+#include <time.h>
+
+#include <twine/chrono.h>
+
 
 namespace {
 
@@ -45,6 +49,11 @@ void thread_decr(void * b)
   --(static_cast<baton *>(b)->count);
 }
 
+void thread_sleep(void *)
+{
+  twine::this_thread::sleep_for(twine::chrono::milliseconds(100));
+}
+
 } // anonymous namespace
 
 class ThreadTest
@@ -53,34 +62,61 @@ class ThreadTest
 public:
     CPPUNIT_TEST_SUITE(ThreadTest);
 
+      CPPUNIT_TEST(testThisThread);
       CPPUNIT_TEST(testSingleThread);
 
     CPPUNIT_TEST_SUITE_END();
 
 private:
+    void testThisThread()
+    {
+      // Should get a thread ID
+      CPPUNIT_ASSERT(twine::thread::bad_thread_id != twine::this_thread::get_id());
+
+      // Yield should not throw.
+      CPPUNIT_ASSERT_NO_THROW(twine::this_thread::yield());
+
+      // Sleep
+      time_t before = time(nullptr);
+      twine::this_thread::sleep_for(twine::chrono::seconds(2));
+      time_t after = time(nullptr);
+      CPPUNIT_ASSERT(after > before);
+    }
+
+
 
     void testSingleThread()
     {
       // Creation auto-starts
       {
         baton b;
-        twine::thread th(thread_incr, &b);
+        twine::thread th(thread_sleep, &b);
         CPPUNIT_ASSERT_EQUAL(true, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT(twine::thread::bad_thread_id != th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
         th.join(); // XXX must do this or it all crashes
       }
 
       // Skip auto-start
       {
         baton b;
-        twine::thread th(thread_incr, &b, false);
+        twine::thread th(thread_sleep, &b, false);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
       }
 
       // Start and detach immediately
       {
         baton b;
-        twine::thread th(thread_incr, &b, true, true);
+        twine::thread th(thread_sleep, &b, true, true);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
       }
 
       // Create without func
@@ -88,6 +124,9 @@ private:
         baton b;
         twine::thread th;
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
       }
 
       // Create, add func later
@@ -95,8 +134,15 @@ private:
         baton b;
         twine::thread th;
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
-        th.set_func(thread_incr, &b);
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
+        th.set_func(thread_sleep, &b);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
       }
 
       // Create, start later
@@ -104,10 +150,22 @@ private:
         baton b;
         twine::thread th;
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
-        th.set_func(thread_incr, &b);
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
+        th.set_func(thread_sleep, &b);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
         th.start();
         CPPUNIT_ASSERT_EQUAL(true, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT(twine::thread::bad_thread_id != th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
         th.join(); // XXX must do this or it all crashes
       }
 
@@ -116,10 +174,24 @@ private:
         baton b;
         twine::thread th;
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
-        th.set_func(thread_incr, &b);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
+        th.set_func(thread_sleep, &b);
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
         th.start(true);
         CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        CPPUNIT_ASSERT_EQUAL(false, th.joinable());
+        twine::this_thread::sleep_for(twine::chrono::milliseconds(10));
+        CPPUNIT_ASSERT_EQUAL(twine::thread::bad_thread_id, th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
       }
     }
 

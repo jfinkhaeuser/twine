@@ -19,13 +19,50 @@
  **/
 #include <twine/thread.h>
 
+#if defined(TWINE_HAVE_GETTID)
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#endif
+
+#if defined(TWINE_HAVE_SCHED_YIELD)
+#include <sched.h>
+#endif
+
 #include <exception>
+#include <stdexcept>
 
 #include <meta/nullptr.h>
 
 #include <twine/scoped_lock.h>
 
 namespace twine {
+
+/******************************************************************************
+ * Static members
+ **/
+thread::id const thread::bad_thread_id = -1;
+
+
+/******************************************************************************
+ * Helper functions
+ **/
+namespace {
+
+// Get a numeric thread ID.  We'll try to return an OS-specific handle.
+static thread::id get_pthread_id()
+{
+#if defined(TWINE_HAVE_GETTID)
+  return ::syscall(SYS_gettid);
+#elif defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
+  return ::pthread_getthreadid_np();
+#else
+  return thread::bad_thread_id;
+#endif
+}
+
+} // anonymous namespace
+
 
 /**
  * Thread metadata.
@@ -39,14 +76,16 @@ namespace twine {
  **/
 struct thread::thread_info
 {
-  thread::function_type m_func;
-  void *                m_baton;
-  volatile thread *     m_thread;
+  thread::function    m_func;
+  void *              m_baton;
+  volatile thread *   m_thread;
+  thread::id          m_id;
 
-  thread_info(thread::function_type func, void * baton, thread * thread)
+  thread_info(thread::function func, void * baton, thread * thread)
     : m_func(func)
     , m_baton(baton)
     , m_thread(thread)
+    , m_id(bad_thread_id)
   {
   }
 
@@ -54,6 +93,7 @@ struct thread::thread_info
     : m_func(other->m_func)
     , m_baton(other->m_baton)
     , m_thread(other->m_thread)
+    , m_id(bad_thread_id)
   {
   }
 
@@ -64,6 +104,24 @@ struct thread::thread_info
     return (m_func == tmp_info->m_func
         && m_baton == tmp_info->m_baton
         && m_thread == tmp_info->m_thread);
+  }
+
+  inline void get_thread_id()
+  {
+    // If the thread object is a null pointer, we're already detached.
+    thread * tmp_thread = const_cast<thread *>(m_thread);
+    if (!tmp_thread) {
+      return;
+    }
+
+    // XXX Possible, but unlikely race condition, see detach_from_thread_object()
+    //     below.
+    //
+    //     tmp_thread may be destroyed already if it went out of scope
+    //     immediately after start() was called. This would likely crash the
+    //     program anyway (see thread dtor for details).
+    scoped_lock<recursive_mutex> lock(tmp_thread->m_mutex);
+    m_id = get_pthread_id();
   }
 
   inline void detach_from_thread_object() const
@@ -103,10 +161,16 @@ struct thread::thread_info
 
 namespace {
 
+
+
+
 // Thread wrapper function - takes ownership of the passed info structure
-void * wrapper(void * arg)
+static void * wrapper(void * arg)
 {
   thread::thread_info * info = static_cast<thread::thread_info *>(arg);
+
+  // Get thead id.
+  info->get_thread_id();
 
   // Run thread function safely - terminate the thread on any exception
   try {
@@ -125,10 +189,14 @@ void * wrapper(void * arg)
 }
 
 
+
 } // anonymous namespace
 
 
 
+/******************************************************************************
+ * Implementation
+ **/
 
 thread::thread()
   : m_mutex()
@@ -140,7 +208,7 @@ thread::thread()
 
 
 
-thread::thread(thread::function_type func, void * baton,
+thread::thread(thread::function func, void * baton,
     bool start_now /* = true */, bool detach_now /* = false */)
   : m_mutex()
   , m_info(nullptr)
@@ -177,7 +245,7 @@ thread::join()
   if (m_is_attached) {
     m_is_attached = false;
     lock.unlock();
-    pthread_join(m_handle, nullptr);
+    ::pthread_join(m_handle, nullptr);
   }
 }
 
@@ -197,7 +265,7 @@ thread::detach()
 {
   scoped_lock<recursive_mutex> lock(m_mutex);
   if (m_is_attached) {
-    pthread_detach(m_handle);
+    ::pthread_detach(m_handle);
 
     // The current m_info structure is owned by the now-detached thread. This
     // means we can:
@@ -213,7 +281,7 @@ thread::detach()
 
 
 bool
-thread::set_func(function_type func, void * baton)
+thread::set_func(function func, void * baton)
 {
   // If we have no function object, we might as well exit immediately.
   if (!func) {
@@ -253,12 +321,52 @@ thread::start(bool detach_now /* = false */)
   }
 
   // Try to launch thread
-  if (0 == pthread_create(&m_handle, nullptr, wrapper, tmp_info)) {
+  if (0 == ::pthread_create(&m_handle, nullptr, wrapper, tmp_info)) {
     if (detach_now) {
-      pthread_detach(m_handle);
+      ::pthread_detach(m_handle);
     }
     m_is_attached = !detach_now;
   }
 }
+
+
+thread::id
+thread::get_id() const
+{
+  scoped_lock<recursive_mutex> lock(m_mutex);
+
+  if (!m_info || !m_is_attached) {
+    return bad_thread_id;
+  }
+
+  return m_info->m_id;
+}
+
+
+/******************************************************************************
+ * this_thread
+ **/
+namespace this_thread {
+
+thread::id get_id()
+{
+  return get_pthread_id();
+}
+
+/**
+ * Yield execution to another thread.
+ **/
+void yield()
+{
+#if defined(TWINE_HAVE_SCHED_YIELD)
+  sched_yield();
+#else
+  throw std::runtime_error("yield() not implemented on this platform.");
+#endif
+}
+
+} // namespace this_thread
+
+
 
 } // namespace twine
