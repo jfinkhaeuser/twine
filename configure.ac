@@ -94,10 +94,7 @@ JF_CHECK_FUNC_IN([time.h], [nanosleep], [nanosleep(NULL, NULL);])
 
 ##############################################################################
 # Variable substitions
-AC_DEFINE_UNQUOTED([PACKAGE_MAJOR], ["$AX_MAJOR_VERSION"], [Define to the major
-    version of this package.])
-AC_DEFINE_UNQUOTED([PACKAGE_MINOR], ["$AX_MINOR_VERSION"], [Define to the minor
-    version of this package.])
+JF_SPLIT_VERSION
 
 AC_SUBST([AM_CXXFLAGS])
 AC_SUBST([AM_LDFLAGS])
