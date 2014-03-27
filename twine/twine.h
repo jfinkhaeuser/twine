@@ -56,6 +56,8 @@
 #endif
 
 // Meta-related defines
-#define META_NEED_NULLPTR_COMPATIBILITY
+#if !defined(TWINE_HAVE_STDCXX_0X)
+#  define META_NEED_NULLPTR_COMPATIBILITY
+#endif
 
 #endif // guard
