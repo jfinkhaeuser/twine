@@ -82,8 +82,26 @@ public:
 private:
 
   template <typename mutexT>
-  void testConditionCommon()
+  void testConditionImpl()
   {
+    twine::condition cond;
+
+    // Since we don't have several threads, we expect timed_wait() to time out
+    {
+      mutexT m;
+      m.lock();
+      bool ret = cond.timed_wait(m, COND_TEST_LONG_DELAY);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
+    // The same with a lock
+    {
+      mutexT m;
+      twine::scoped_lock<mutexT> l(m);
+      bool ret = cond.timed_wait(l, COND_TEST_LONG_DELAY);
+      CPPUNIT_ASSERT_EQUAL(false, ret);
+    }
+
     // Now use a condition to wake up a single thread
     {
       baton<mutexT> b;
@@ -206,53 +224,14 @@ private:
 
   void testConditionMutex()
   {
-    twine::condition cond;
-
-    // Since we don't have several threads, we expect timed_wait() to time out
-    {
-      twine::mutex m;
-      bool ret = cond.timed_wait(m, COND_TEST_LONG_DELAY);
-      CPPUNIT_ASSERT_EQUAL(false, ret);
-    }
-
-    // The same with a lock
-    {
-      twine::mutex m;
-      twine::scoped_lock<twine::mutex> l(m);
-      l.unlock();
-      bool ret = cond.timed_wait(l, COND_TEST_LONG_DELAY);
-      CPPUNIT_ASSERT_EQUAL(false, ret);
-    }
-
-    testConditionCommon<twine::mutex>();
+    testConditionImpl<twine::mutex>();
   }
 
 
 
   void testConditionRecursiveMutex()
   {
-    // XXX recursive mutexes (seemingly) need to be locked before we can 
-    //     wait on them.
-
-    twine::condition cond;
-
-    // Since we don't have several threads, we expect timed_wait() to time out
-    {
-      twine::recursive_mutex m;
-      m.lock();
-      bool ret = cond.timed_wait(m, COND_TEST_LONG_DELAY);
-      CPPUNIT_ASSERT_EQUAL(false, ret);
-    }
-
-    // The same with a lock
-    {
-      twine::recursive_mutex m;
-      twine::scoped_lock<twine::recursive_mutex> l(m);
-      bool ret = cond.timed_wait(l, COND_TEST_LONG_DELAY);
-      CPPUNIT_ASSERT_EQUAL(false, ret);
-    }
-
-    testConditionCommon<twine::recursive_mutex>();
+    testConditionImpl<twine::recursive_mutex>();
   }
 };
 
