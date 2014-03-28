@@ -28,7 +28,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 // Which platform are we on?
 #if !defined(TWINE_PLATFORM_DEFINED_)
