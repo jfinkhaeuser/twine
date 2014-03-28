@@ -186,6 +186,8 @@ static void * wrapper(void * arg)
 
   // Cleanup
   delete info;
+
+  return nullptr;
 }
 
 
