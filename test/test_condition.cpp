@@ -22,6 +22,36 @@
 
 #include <twine/condition.h>
 #include <twine/mutex.h>
+#include <twine/thread.h>
+
+#define COND_TEST_LONG_DELAY twine::chrono::milliseconds(1)
+
+namespace {
+
+template <typename mutexT>
+struct baton
+{
+  int               woken;
+  mutexT            m;
+  twine::condition  cond;
+
+  baton()
+    : woken(0)
+  {
+  }
+};
+
+
+template <typename mutexT>
+void thread_func(void * arg)
+{
+  baton<mutexT> * b = static_cast<baton<mutexT> *>(arg);
+  twine::scoped_lock<mutexT> lock(b->m);
+  b->cond.wait(lock);
+  ++b->woken;
+}
+
+} // anonymous namespace
 
 
 class ConditionTest
@@ -36,6 +66,88 @@ public:
     CPPUNIT_TEST_SUITE_END();
 
 private:
+
+  template <typename mutexT>
+  void testConditionCommon()
+  {
+    // Now use a condition to wake up a single thread
+    {
+      baton<mutexT> b;
+      twine::thread th0(thread_func<mutexT>, &b);
+      CPPUNIT_ASSERT_EQUAL(true, th0.joinable());
+
+      twine::scoped_lock<mutexT> l(b.m);
+      CPPUNIT_ASSERT_EQUAL(0, b.woken);
+      l.unlock();
+
+      // Give threads a chance to wake up before checking the result
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+      b.cond.notify_one();
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+
+      l.lock();
+      CPPUNIT_ASSERT_EQUAL(1, b.woken);
+      CPPUNIT_ASSERT_EQUAL(false, th0.joinable());
+    }
+
+    // Use a condition with two threads, see which one wakes up
+    {
+      baton<mutexT> b;
+      twine::thread th0(thread_func<mutexT>, &b);
+      twine::thread th1(thread_func<mutexT>, &b);
+      CPPUNIT_ASSERT_EQUAL(true, th0.joinable());
+      CPPUNIT_ASSERT_EQUAL(true, th1.joinable());
+
+      twine::scoped_lock<mutexT> l(b.m);
+      CPPUNIT_ASSERT_EQUAL(0, b.woken);
+      l.unlock();
+
+      // Give threads a chance to wake up before checking the result
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+      b.cond.notify_one();
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+
+      l.lock();
+      CPPUNIT_ASSERT_EQUAL(1, b.woken);
+      CPPUNIT_ASSERT(false == th0.joinable() || false == th1.joinable());
+      CPPUNIT_ASSERT(true  == th0.joinable() || true  == th1.joinable());
+
+      // Notify again to get the other thread
+      l.unlock();
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+      b.cond.notify_one();
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+      l.lock();
+
+      CPPUNIT_ASSERT_EQUAL(false, th0.joinable());
+      CPPUNIT_ASSERT_EQUAL(false, th1.joinable());
+    }
+
+    // Use a condition with two threads, notify both
+    {
+      baton<mutexT> b;
+      twine::thread th0(thread_func<mutexT>, &b);
+      twine::thread th1(thread_func<mutexT>, &b);
+      CPPUNIT_ASSERT_EQUAL(true, th0.joinable());
+      CPPUNIT_ASSERT_EQUAL(true, th1.joinable());
+
+      twine::scoped_lock<mutexT> l(b.m);
+      CPPUNIT_ASSERT_EQUAL(0, b.woken);
+      l.unlock();
+
+      // Give threads a chance to wake up before checking the result
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+      b.cond.notify_all();
+      twine::this_thread::sleep_for(COND_TEST_LONG_DELAY);
+
+      l.lock();
+      CPPUNIT_ASSERT_EQUAL(2, b.woken);
+      CPPUNIT_ASSERT_EQUAL(false, th0.joinable());
+      CPPUNIT_ASSERT_EQUAL(false, th1.joinable());
+    }
+  }
+
+
 
   void testConditionMutex()
   {
@@ -58,10 +170,9 @@ private:
       CPPUNIT_ASSERT_EQUAL(false, ret);
     }
 
-    // XXX We can't notify first and then wait, so we'll have to skip further
-    //     tests here.
-    CPPUNIT_FAIL("not fully implemented yet.");
+    testConditionCommon<twine::mutex>();
   }
+
 
 
   void testConditionRecursiveMutex()
@@ -88,10 +199,7 @@ private:
       CPPUNIT_ASSERT_EQUAL(false, ret);
     }
 
-
-    // XXX We can't notify first and then wait, so we'll have to skip further
-    //     tests here.
-    CPPUNIT_FAIL("not fully implemented yet.");
+    testConditionCommon<twine::recursive_mutex>();
   }
 };
 
