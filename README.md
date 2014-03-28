@@ -42,3 +42,24 @@ Requirements
 - Twine uses [CppUnit](http://cppunit.sourceforge.net) _for unit tests only_.
 - Twine uses a very limited subset of [meta](https://github.com/jfinkhaeuser/meta).
   It's so limited it's barely necessary, but hey, `pkg-config` makes it easy!
+- Twine uses [autotools](http://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html)
+ to build.
+
+
+Installation
+------------
+
+After installing the requirements, run:
+
+```bash
+$ autoreconf -siv
+```
+
+This will install missing build files and create a `configure` script. Usually, you can just run the
+following commands to get going:
+
+```bash
+$ ./configure && make check
+```
+
+For more details, check out the `INSTALL` file that was being generated/linked in the first step.

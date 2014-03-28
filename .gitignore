@@ -22,6 +22,8 @@ test/*.log
 test/*.core
 test/*.trs
 
+INSTALL
+
 # libtool
 ltmain.sh
 libtool
