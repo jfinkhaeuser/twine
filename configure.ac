@@ -81,9 +81,10 @@ AC_TYPE_SSIZE_T
 
 ##############################################################################
 # Checks for library functions.
+CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 JF_CHECK_FUNC_IN([unistd.h sys/syscall.h sys/types.h], [gettid],
     [int foo = syscall(SYS_gettid);])
-JF_CHECK_FUNC_IN([pthread.h], [pthread_getthreadid_np],
+JF_CHECK_FUNC_IN([pthread_np.h], [pthread_getthreadid_np],
     [int foo = pthread_getthreadid_np();])
 JF_CHECK_FUNC_IN([sched.h], [sched_yield], [sched_yield();])
 JF_CHECK_FUNC_IN([time.h], [nanosleep], [nanosleep(NULL, NULL);])
