@@ -58,7 +58,7 @@ void
 condition::wait(lockableT & lockable)
 {
   pthread_cond_wait(&m_handle,
-      &detail::unwrap_handle<pthread_mutex_t, lockableT>::get());
+      &detail::unwrap_handle<pthread_mutex_t, lockableT>::get(lockable));
 }
 
 
