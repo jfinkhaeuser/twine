@@ -108,6 +108,7 @@ private:
         CPPUNIT_ASSERT(twine::thread::bad_thread_id != th.get_id());
         CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
 
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
         th.join(); // XXX must do this or it all crashes
       }
 
@@ -178,6 +179,7 @@ private:
         CPPUNIT_ASSERT(twine::thread::bad_thread_id != th.get_id());
         CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
 
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
         th.join(); // XXX must do this or it all crashes
       }
 
