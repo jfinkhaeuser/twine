@@ -17,6 +17,10 @@ Makefile
 .libs
 .dirstamp
 _configs.sed
+test-driver
+test/*.log
+test/*.core
+test/*.trs
 
 # libtool
 ltmain.sh
