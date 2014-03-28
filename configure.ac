@@ -4,14 +4,14 @@ AC_PREREQ([2.68])
 LT_PREREQ([2.4])
 
 AC_INIT([twine], [0.1], [jens@unwesen.co.uk])
-AM_INIT_AUTOMAKE([twine], [1.11.1])
 AC_CONFIG_SRCDIR([twine])
-AC_CONFIG_HEADER([twine/_config.h])
-AX_PREFIX_CONFIG_H([twine/twine-config.h])
-
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE
+
+AC_CONFIG_HEADER([twine/_config.h])
+AX_PREFIX_CONFIG_H([twine/twine-config.h])
 
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
@@ -24,7 +24,7 @@ AC_LANG([C++])
 # Make build target available to automake
 target=
 case $target_os in
-  *linux*)
+  *linux*|*bsd*)
     target=posix
     ;;
   *win32*)
