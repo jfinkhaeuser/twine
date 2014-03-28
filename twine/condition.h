@@ -59,7 +59,8 @@ public:
   ~condition();
 
   // Main interface. Use with mutexes or scoped locks, and durations
-  // defined in chrono.h
+  // defined in chrono.h. The lockable should be locked before passing it to
+  // either of the wait functions.
   template <typename lockableT>
   inline void wait(lockableT & lockable);
 
