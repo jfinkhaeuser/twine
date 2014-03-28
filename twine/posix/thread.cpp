@@ -29,6 +29,10 @@
 #include <sched.h>
 #endif
 
+#if defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
+#include <pthread_np.h>
+#endif
+
 #include <exception>
 #include <stdexcept>
 
