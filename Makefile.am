@@ -7,6 +7,8 @@ libtool: $(LIBTOOL_DEPS)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = twine.pc
 
+DISTCLEANFILES = _configs.sed twine/twine-config.h
+
 SUBDIRS = \
 	twine \
 	test
