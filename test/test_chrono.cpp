@@ -22,6 +22,8 @@
 
 #include <twine/chrono.h>
 
+#include <sstream>
+
 
 namespace {
 
@@ -36,6 +38,8 @@ public:
 
       CPPUNIT_TEST(testRaw);
       CPPUNIT_TEST(testConversion);
+      CPPUNIT_TEST(testStreaming);
+      CPPUNIT_TEST(testNow);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -169,6 +173,58 @@ private:
                    60,
                     1>();
 
+    }
+
+
+
+    template <
+      typename testT,
+      twine::chrono::nsec_t VALUE
+    >
+    void testStreamingImpl(std::string const & expected)
+    {
+      namespace tc = twine::chrono;
+
+      testT n(VALUE);
+
+      std::stringstream s;
+      s << n;
+      CPPUNIT_ASSERT_EQUAL(expected, s.str());
+    }
+
+    void testStreaming()
+    {
+      namespace tc = twine::chrono;
+
+      testStreamingImpl<tc::nanoseconds, 3600000000001>("1:00:00.000000001");
+      testStreamingImpl<tc::nanoseconds, 3600000000000>("1:00:00.000000000");
+      testStreamingImpl<tc::nanoseconds, 3599999999999>("0:59:59.999999999");
+      testStreamingImpl<tc::microseconds, 3600000001>("1:00:00.000001000");
+      testStreamingImpl<tc::microseconds, 3600000000>("1:00:00.000000000");
+      testStreamingImpl<tc::microseconds, 3599999999>("0:59:59.999999000");
+      testStreamingImpl<tc::milliseconds, 3600001>("1:00:00.001000000");
+      testStreamingImpl<tc::milliseconds, 3600000>("1:00:00.000000000");
+      testStreamingImpl<tc::milliseconds, 3599999>("0:59:59.999000000");
+      testStreamingImpl<tc::seconds, 3601>("1:00:01.000000000");
+      testStreamingImpl<tc::seconds, 3599>("0:59:59.000000000");
+      testStreamingImpl<tc::minutes, 61>("1:01:00.000000000");
+      testStreamingImpl<tc::minutes, 59>("0:59:00.000000000");
+      testStreamingImpl<tc::hours, 25>("25:00:00.000000000");
+
+      testStreamingImpl<tc::nanoseconds, 3612345678901>("1:00:12.345678901");
+    }
+
+
+
+    void testNow()
+    {
+      // Not much we can test for as it's a system call. The only thing is that
+      // if it's nanoseconds, we need to know it's >0
+      auto now = twine::chrono::now();
+      CPPUNIT_ASSERT(now.raw() > 0);
+
+      CPPUNIT_ASSERT_MESSAGE("may fail if you have incorrect system time",
+          now.as<twine::chrono::seconds>() > 1396277686);
     }
 };
 
