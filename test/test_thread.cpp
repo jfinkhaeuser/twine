@@ -27,8 +27,8 @@
 #include <twine/chrono.h>
 #include <twine/scoped_lock.h>
 
-#define THREAD_TEST_LONG_DELAY  twine::chrono::milliseconds(1)
-#define THREAD_TEST_SHORT_DELAY twine::chrono::microseconds(100)
+#define THREAD_TEST_SHORT_DELAY twine::chrono::milliseconds(1)
+#define THREAD_TEST_LONG_DELAY  twine::chrono::milliseconds(100)
 
 namespace {
 
@@ -38,6 +38,7 @@ struct baton
   twine::mutex m;
   baton(int _count = 0)
     : count(_count)
+    , m()
   {
   }
 };
