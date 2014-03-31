@@ -8,6 +8,7 @@ pkginclude_HEADERS = \
 	twine.h \
 	twine-config.h \
 	version.h \
+	noncopyable.h \
 	mutex.h \
 	scoped_lock.h \
 	chrono.h \
