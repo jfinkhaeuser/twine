@@ -83,10 +83,10 @@ public:
   thread(function func, void * baton, bool start_now = true,
       bool detach_now = false);
 
-  ~thread();
+  virtual ~thread();
 
   /***************************************************************************
-   * Constructor/destructor
+   * Main interface
    **/
   /**
    * A thread is joinable if and only if it currently runs a thread function.

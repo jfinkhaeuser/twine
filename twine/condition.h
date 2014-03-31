@@ -55,8 +55,8 @@ class condition
 {
 public:
   // Constructor/destructor
-  condition();
-  ~condition();
+  inline condition();
+  inline ~condition();
 
   // Main interface. Use with mutexes or scoped locks, and durations
   // defined in chrono.h. The lockable should be locked before passing it to
