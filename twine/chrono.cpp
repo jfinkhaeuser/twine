@@ -34,10 +34,11 @@ namespace chrono {
 nanoseconds now()
 {
 #if defined(TWINE_HAVE_SYS_TIME_H) && defined(TWINE_HAVE_SYS_TYPES_H) && defined(TWINE_HAVE_UNISTD_H)
+  // FIXME use select() ? may need this to be interruptible by I/O
   ::timeval tv;
   ::gettimeofday(&tv, nullptr);
 
-  return nanoseconds(nsec_t((tv.tv_sec * 1000000000) + (tv.tv_usec * 1000)));
+  return nanoseconds(default_repr_t((tv.tv_sec * 1000000000) + (tv.tv_usec * 1000)));
 #else
   return 0;
 #endif

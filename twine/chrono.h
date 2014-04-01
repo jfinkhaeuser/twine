@@ -29,6 +29,8 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include <iostream>
+
 #include <meta/math.h>
 
 
@@ -36,9 +38,9 @@ namespace twine {
 namespace chrono {
 
 /**
- * Microsecond type.
+ * Representation type used most commonly. Still, the templates could use others.
  **/
-typedef int64_t nsec_t;
+typedef int64_t default_repr_t;
 
 
 /**
@@ -47,12 +49,13 @@ typedef int64_t nsec_t;
 namespace detail {
 
 // Standard ratios
-typedef ::meta::math::ratio<nsec_t, 1, 1000000000>  nanosecond_ratio;  // Ratio for the unit nanoseconds.
-typedef ::meta::math::ratio<nsec_t, 1, 1000000>     microsecond_ratio; // Ratio for the unit microseconds.
-typedef ::meta::math::ratio<nsec_t, 1, 1000>        millisecond_ratio; // Ratio for the unit milliseconds.
-typedef ::meta::math::ratio<nsec_t, 1>              second_ratio;      // Ratio for the unit seconds.
-typedef ::meta::math::ratio<nsec_t, 60>             minute_ratio;      // Ratio for the unit minutes.
-typedef ::meta::math::ratio<nsec_t, 3600>           hour_ratio;        // Ratio for the unit hours.
+typedef ::meta::math::ratio<default_repr_t, 1, 1000000000>  nanosecond_ratio;  // Ratio for the unit nanoseconds.
+typedef ::meta::math::ratio<default_repr_t, 1, 1000000>     microsecond_ratio; // Ratio for the unit microseconds.
+typedef ::meta::math::ratio<default_repr_t, 1, 1000>        millisecond_ratio; // Ratio for the unit milliseconds.
+typedef ::meta::math::ratio<default_repr_t, 1>              second_ratio;      // Ratio for the unit seconds.
+typedef ::meta::math::ratio<default_repr_t, 60>             minute_ratio;      // Ratio for the unit minutes.
+typedef ::meta::math::ratio<default_repr_t, 3600>           hour_ratio;        // Ratio for the unit hours.
+
 
 /**
  * Minimal implementation of a chrono::duration class similar to the C++11
@@ -60,11 +63,29 @@ typedef ::meta::math::ratio<nsec_t, 3600>           hour_ratio;        // Ratio 
  **/
 template <
   typename reprT,
+  typename ratioT
+>
+struct duration;
+
+template <
+  typename reprT,
+  typename ratioT
+>
+inline std::ostream &
+operator<<(std::ostream & os, duration<reprT, ratioT> const & d);
+
+
+
+template <
+  typename reprT,
   typename ratioT = ::meta::math::ratio<reprT, reprT(1)>
 >
 struct duration
   : public ratioT
 {
+  typedef reprT   repr_t;
+  typedef ratioT  ratio_t;
+
   explicit duration(reprT const & repr = reprT())
     : m_repr(repr)
   {
@@ -94,27 +115,125 @@ struct duration
     spec.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND) / second_ratio_t::DIVISOR);
 
     typedef typename ::meta::math::invert<second_ratio_t>::type inverse_t;
-    nsec_t remainder = m_repr - ((nsec_t(spec.tv_sec) * inverse_t::DIVIDEND) / inverse_t::DIVISOR);
+    default_repr_t remainder = m_repr - ((default_repr_t(spec.tv_sec) * inverse_t::DIVIDEND) / inverse_t::DIVISOR);
 
     typedef ::meta::math::divide_ratios<ratioT, nanosecond_ratio> nanosecond_ratio_t;
     spec.tv_nsec = long((remainder * nanosecond_ratio_t::DIVIDEND) / nanosecond_ratio_t::DIVISOR);
   }
 
+  template <typename target_ratioT>
+  inline duration & operator+=(duration<reprT, target_ratioT> const & other)
+  {
+    m_repr += other.template as<ratioT>();
+    return *this;
+  }
+
+  template <typename target_ratioT>
+  inline duration & operator-=(duration<reprT, target_ratioT> const & other)
+  {
+    m_repr -= other.template as<ratioT>();
+    return *this;
+  }
+
+  template <typename target_ratioT>
+  inline duration operator+(duration<reprT, target_ratioT> const & other)
+  {
+    duration<reprT, ratioT> tmp = *this;
+    tmp += other;
+    return tmp;
+  }
+
+  template <typename target_ratioT>
+  inline duration operator-(duration<reprT, target_ratioT> const & other)
+  {
+    duration<reprT, ratioT> tmp = *this;
+    tmp -= other;
+    return tmp;
+  }
+
 private:
+
+  friend std::ostream & operator<< <reprT, ratioT>(std::ostream & os, duration<reprT, ratioT> const & d);
 
   reprT m_repr;
 };
 
 
+
 } // namespace detail
 
 // Standard duration types.
-typedef detail::duration<nsec_t, detail::nanosecond_ratio>  nanoseconds;  // Duration with the unit nanoseconds.
-typedef detail::duration<nsec_t, detail::microsecond_ratio> microseconds; // Duration with the unit microseconds.
-typedef detail::duration<nsec_t, detail::millisecond_ratio> milliseconds; // Duration with the unit milliseconds.
-typedef detail::duration<nsec_t, detail::second_ratio>      seconds;      // Duration with the unit seconds.
-typedef detail::duration<nsec_t, detail::minute_ratio>      minutes;      // Duration with the unit minutes.
-typedef detail::duration<nsec_t, detail::hour_ratio>        hours;        // Duration with the unit hours.
+typedef detail::duration<default_repr_t, detail::nanosecond_ratio>  nanoseconds;  // Duration with the unit nanoseconds.
+typedef detail::duration<default_repr_t, detail::microsecond_ratio> microseconds; // Duration with the unit microseconds.
+typedef detail::duration<default_repr_t, detail::millisecond_ratio> milliseconds; // Duration with the unit milliseconds.
+typedef detail::duration<default_repr_t, detail::second_ratio>      seconds;      // Duration with the unit seconds.
+typedef detail::duration<default_repr_t, detail::minute_ratio>      minutes;      // Duration with the unit minutes.
+typedef detail::duration<default_repr_t, detail::hour_ratio>        hours;        // Duration with the unit hours.
+
+
+namespace detail {
+
+
+template <
+  typename reprT,
+  typename ratioT
+>
+inline std::ostream &
+operator<<(std::ostream & os, duration<reprT, ratioT> const & d)
+{
+  default_repr_t tmp = d.template as<twine::chrono::nanoseconds>();
+
+  static const struct
+  {
+    reprT limit;
+    char  sep;
+    int   pad;
+  } conv[] = {
+    { 3600000000000, ':', -1 },
+    {   60000000000, ':', 1 },
+    {    1000000000, '.', 1 },
+    {             1, '\0', 8 },
+  };
+
+  for (int i = 0 ; i < sizeof(conv) / sizeof(conv[0]) ; ++i) {
+    // Get the value for the current position
+    reprT val = tmp / conv[i].limit;
+    tmp = tmp % conv[i].limit;
+
+    // Display value with padding.
+    reprT p = 1;
+    for (int j = 0 ; j < conv[i].pad ; ++j) {
+      p *= 10;
+    }
+    for (int j = 0 ; j < conv[i].pad ; ++j) {
+      if (val < p) {
+        os << "0";
+      }
+      p /= 10;
+    }
+
+    // Display value and separator
+    os << val;
+    if (conv[i].sep > 0) {
+      os << conv[i].sep;
+    }
+    else {
+      break;
+    }
+  }
+
+  return os;
+}
+
+} // namespace detail
+
+
+/**
+ * Get the current timestampt with maximum resolution. Note that it's quite
+ * possible that the underlying system does not support this resolution, so the
+ * return value will have the underlying system's resolution.
+ **/
+nanoseconds now();
 
 }} // namespace twine::chrono
 

@@ -40,6 +40,7 @@ public:
       CPPUNIT_TEST(testConversion);
       CPPUNIT_TEST(testStreaming);
       CPPUNIT_TEST(testNow);
+      CPPUNIT_TEST(testArithmetic);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -51,19 +52,19 @@ private:
       // Value of 0
       {
         T n(0);
-        CPPUNIT_ASSERT_EQUAL(twine::chrono::nsec_t(0), n.raw());
+        CPPUNIT_ASSERT_EQUAL(twine::chrono::default_repr_t(0), n.raw());
       }
 
       // Value of 1
       {
         T n(1);
-        CPPUNIT_ASSERT_EQUAL(twine::chrono::nsec_t(1), n.raw());
+        CPPUNIT_ASSERT_EQUAL(twine::chrono::default_repr_t(1), n.raw());
       }
 
       // Maximum value
       {
-        T n(~twine::chrono::nsec_t(0));
-        CPPUNIT_ASSERT_EQUAL(~twine::chrono::nsec_t(0), n.raw());
+        T n(~twine::chrono::default_repr_t(0));
+        CPPUNIT_ASSERT_EQUAL(~twine::chrono::default_repr_t(0), n.raw());
       }
     }
 
@@ -81,13 +82,13 @@ private:
 
     template <
       typename testT,
-      twine::chrono::nsec_t VALUE,
-      twine::chrono::nsec_t NANOSEC,
-      twine::chrono::nsec_t MICROSEC,
-      twine::chrono::nsec_t MILLISEC,
-      twine::chrono::nsec_t SEC,
-      twine::chrono::nsec_t MIN,
-      twine::chrono::nsec_t HOUR
+      twine::chrono::default_repr_t VALUE,
+      twine::chrono::default_repr_t NANOSEC,
+      twine::chrono::default_repr_t MICROSEC,
+      twine::chrono::default_repr_t MILLISEC,
+      twine::chrono::default_repr_t SEC,
+      twine::chrono::default_repr_t MIN,
+      twine::chrono::default_repr_t HOUR
     >
     void testConversionImpl()
     {
@@ -179,7 +180,7 @@ private:
 
     template <
       typename testT,
-      twine::chrono::nsec_t VALUE
+      twine::chrono::default_repr_t VALUE
     >
     void testStreamingImpl(std::string const & expected)
     {
@@ -225,6 +226,65 @@ private:
 
       CPPUNIT_ASSERT_MESSAGE("may fail if you have incorrect system time",
           now.as<twine::chrono::seconds>() > 1396277686);
+    }
+
+
+
+    void testArithmetic()
+    {
+      // We support very simple arithmetic on durations: addition and subtraction
+      namespace tc = twine::chrono;
+
+      // 1 second and one second must add up to 2
+      tc::seconds s1(1);
+      tc::seconds s2(1);
+
+      s1 += s2;
+
+      // s1 must be 2
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.raw());
+
+      // s2 must be unchanged
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(1), s2.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(1), s2.raw());
+
+      // Subtraction
+      s2 -= s1;
+
+      // s2 must be negative
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(-1), s2.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(-1), s2.raw());
+
+      // s1 must be unchanged
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.raw());
+
+      // + and - operators
+      tc::seconds s3 = (s1 + s2) - s1;
+
+      // s3 must be equal to s2. s1 and s2 must be unchanged
+      CPPUNIT_ASSERT_EQUAL(s3.raw(), s2.raw());
+      CPPUNIT_ASSERT_EQUAL(s3.as<tc::seconds>(), s2.as<tc::seconds>());
+
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(-1), s2.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(-1), s2.raw());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(2), s1.raw());
+
+      // Important check: ensure ratio conversion works.
+      tc::minutes s4(1);
+      s4 += s2;
+
+      // Unchanged, because s2 is zero in minutes units.
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(1), s4.raw());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(1), s4.as<tc::minutes>());
+
+      s2 += s4;
+      // Changed, because s4 in seconds is 60
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(59), s2.raw());
+      CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(59), s2.as<tc::seconds>());
+
     }
 };
 
