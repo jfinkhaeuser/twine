@@ -34,6 +34,8 @@
 #  include <time.h>
 #endif
 
+#include <meta/nullptr.h>
+
 namespace twine {
 
 /**
