@@ -1,0 +1,14 @@
+before_install:
+  - "sudo apt-get update"
+install:
+  - "sudo apt-get install libcppunit-dev clang"
+script:
+  - "autoreconf -siv"
+  - "mkdir build && cd build"
+  - "../configure --enable-static --disable-shared"
+  - "make distcheck"
+env:
+  - CXX=g++ CC=gcc CXXFLAGS=-DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX98
+  - CXX=clang++ CC=clang CXXFLAGS=-DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX98
+  - CXX=g++ CC=gcc CXXFLAGS=-DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX0X
+  - CXX=clang++ CC=clang CXXFLAGS=-DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX0X

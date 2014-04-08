@@ -2,7 +2,16 @@
 AM_CXXFLAGS = -I$(top_srcdir) @AM_CXXFLAGS@
 
 # Set default compiler flags
-AM_CXXFLAGS += -g $(TWINE_CXX0X_FLAG)
+AM_CXXFLAGS += -g
+
+if TWINE_CXX_MODE_CXX0X
+AM_CXXFLAGS += -std=c++0x -Wc++0x-compat
+else
+if TWINE_CXX_MODE_CXX98
+AM_CXXFLAGS += -std=c++98 -DMETA_CXX_MODE=META_CXX_MODE_CXX98
+endif
+endif
+
 
 # Dependencies XXX keep these in sync with twine.pc.in
 AM_CXXFLAGS += $(PTHREAD_CFLAGS) $(META_CFLAGS)

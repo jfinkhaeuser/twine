@@ -18,7 +18,6 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_LANG_CPLUSPLUS
-AC_LANG([C++])
 
 ##############################################################################
 # Make build target available to automake
@@ -37,6 +36,8 @@ AM_CONDITIONAL([HAVE_WIN32], [test "x$target" == xwin32])
 ##############################################################################
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_CC
+AM_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG
 
 ##############################################################################
@@ -45,15 +46,6 @@ AC_C_BIGENDIAN
 
 # The AU_ALIAS is needed due to a bug in AX_CXX_HEADER_STDCXX_0X, etc.
 AX_CXX_COMPILE_STDCXX_0X
-if test "$ax_cv_cxx_compile_cxx0x_native" != yes ; then
-  if test "$ax_cv_cxx_compile_cxx0x_gxx" = yes ; then
-    AC_SUBST([TWINE_CXX0X_FLAG], [-std=gnu++0x])
-  fi
-  if test "$ax_cv_cxx_compile_cxx0x_cxx" = yes ; then
-    AC_SUBST([TWINE_CXX0X_FLAG], [-std=c++0x])
-  fi
-fi
-
 AU_ALIAS([AC_COMPILE_STDCXX_0X], [AX_CXX_COMPILE_STDCXX_0X])
 
 ##############################################################################
@@ -62,6 +54,17 @@ AX_PTHREAD()
 PKG_CHECK_MODULES([CPPUNIT], [cppunit >= 1.12])
 PKG_CHECK_MODULES([META], [meta >= 0.1])
 
+# Check if the CXX mode was set on the configure command line
+if echo "$CXXFLAGS" | $GREP -q 'DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX0X' ; then
+  jf_cxx_mode=0x
+elif echo "$CXXFLAGS" | $GREP -q 'DTWINE_CXX_MODE=TWINE_CXX_MODE_CXX98' ; then
+  jf_cxx_mode=98
+else
+  jf_cxx_mode=0x
+fi
+AM_CONDITIONAL([TWINE_CXX_MODE_CXX0X], [test "$jf_cxx_mode" = 0x])
+AM_CONDITIONAL([TWINE_CXX_MODE_CXX98], [test "$jf_cxx_mode" = 98])
+
 ##############################################################################
 # Checks for header files.
 AC_HEADER_STDC
@@ -69,6 +72,9 @@ AC_HEADER_STDC
 AX_CXX_HEADER_STDCXX_98
 AX_CXX_HEADER_STDCXX_TR1
 AX_CXX_HEADER_STDCXX_0X
+
+AC_CHECK_HEADERS([sys/select.h sys/time.h])
+
 
 ##############################################################################
 # Checks for typedefs, structures, and compiler characteristics.
