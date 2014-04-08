@@ -27,6 +27,7 @@
 #  error Cannot compile on this system.
 #endif
 
+#include <meta/nullptr.h>
 
 namespace twine {
 namespace chrono {
@@ -34,7 +35,6 @@ namespace chrono {
 nanoseconds now()
 {
 #if defined(TWINE_HAVE_SYS_TIME_H) && defined(TWINE_HAVE_SYS_TYPES_H) && defined(TWINE_HAVE_UNISTD_H)
-  // FIXME use select() ? may need this to be interruptible by I/O
   ::timeval tv;
   ::gettimeofday(&tv, nullptr);
 

@@ -221,7 +221,7 @@ private:
     {
       // Not much we can test for as it's a system call. The only thing is that
       // if it's nanoseconds, we need to know it's >0
-      auto now = twine::chrono::now();
+      twine::chrono::nanoseconds now = twine::chrono::now();
       CPPUNIT_ASSERT(now.raw() > 0);
 
       CPPUNIT_ASSERT_MESSAGE("may fail if you have incorrect system time",
