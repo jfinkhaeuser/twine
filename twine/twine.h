@@ -60,4 +60,18 @@
 #  define META_NEED_NULLPTR_COMPATIBILITY
 #endif
 
+// Make anonymous namespaces non-anonymous in debugging compilations.
+#undef TWINE_ANONS_START
+#undef TWINE_ANONS
+#undef TWINE_ANONS_END
+#if !defined(DEBUG) || defined(NDEBUG)
+#  define TWINE_ANONS_START namespace {
+#  define TWINE_ANONS(symbol) symbol
+#  define TWINE_ANONS_END }
+#else
+#  define TWINE_ANONS_START namespace debug {
+#  define TWINE_ANONS(symbol) debug:: symbol
+#  define TWINE_ANONS_END }
+#endif
+
 #endif // guard
