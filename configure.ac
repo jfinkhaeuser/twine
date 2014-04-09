@@ -73,7 +73,7 @@ AX_CXX_HEADER_STDCXX_98
 AX_CXX_HEADER_STDCXX_TR1
 AX_CXX_HEADER_STDCXX_0X
 
-AC_CHECK_HEADERS([sys/select.h sys/time.h])
+AC_CHECK_HEADERS([sys/select.h sys/time.h sys/types.h time.h])
 
 
 ##############################################################################
