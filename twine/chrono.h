@@ -96,6 +96,23 @@ struct duration
   {
   }
 
+
+  template <typename target_ratioT>
+  duration(duration<reprT, target_ratioT> const & other)
+    : m_repr(other.template as<ratioT>())
+  {
+  }
+
+
+  template <typename target_ratioT>
+  duration<reprT, ratioT> &
+  operator=(duration<reprT, target_ratioT> const & other)
+  {
+    m_repr = other.template as<ratioT>();
+    return *this;
+  }
+
+
   inline reprT raw() const
   {
     return m_repr;
@@ -317,6 +334,13 @@ nanoseconds now();
  * specified time, false on error. Note that the underlying system call may
  * not have the resolution you specify here.
  **/
+template <typename durationT>
+inline bool
+sleep(durationT const & duration)
+{
+  return sleep(duration.template convert<nanoseconds>());
+}
+
 bool sleep(nanoseconds const & nsec);
 
 }} // namespace twine::chrono
