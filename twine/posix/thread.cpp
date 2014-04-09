@@ -349,6 +349,19 @@ thread::get_id() const
 }
 
 
+
+uint32_t
+thread::hardware_concurrency()
+{
+#if defined(TWINE_HAVE__SC_NPROCESSORS_ONLN)
+  return ::sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(TWINE_HAVE__SC_NPROC_ONLN)
+  return ::sysconf(_SC_NPROC_ONLN);
+#endif
+  return 0;
+}
+
+
 /******************************************************************************
  * this_thread
  **/

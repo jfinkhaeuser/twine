@@ -94,6 +94,10 @@ JF_CHECK_FUNC_IN([pthread_np.h], [pthread_getthreadid_np],
     [int foo = pthread_getthreadid_np();])
 JF_CHECK_FUNC_IN([sched.h], [sched_yield], [sched_yield();])
 JF_CHECK_FUNC_IN([time.h], [nanosleep], [nanosleep(NULL, NULL);])
+JF_CHECK_FUNC_IN([unistd.h], [_SC_NPROCESSORS_ONLN],
+    [sysconf(_SC_NPROCESSORS_ONLN);])
+JF_CHECK_FUNC_IN([unistd.h], [_SC_NPROC_ONLN],
+    [sysconf(_SC_NPROC_ONLN);])
 
 
 ##############################################################################

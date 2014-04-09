@@ -132,6 +132,13 @@ public:
   static id const bad_thread_id;
   id get_id() const;
 
+  /**
+   * Return the number of threads the hardware can run concurrently. The
+   * standard requires that zero is returned if the number cannot be
+   * determined.
+   **/
+  static uint32_t hardware_concurrency();
+
 
   /***************************************************************************
    * Extended functionality

@@ -92,6 +92,7 @@ public:
       CPPUNIT_TEST(testSingleThread);
       CPPUNIT_TEST(testMultipleThreads);
       CPPUNIT_TEST(testBinder);
+      CPPUNIT_TEST(testHardwareConcurrency);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -301,6 +302,15 @@ private:
 
         CPPUNIT_ASSERT_EQUAL(true, test.called);
       }
+    }
+
+
+
+    void testHardwareConcurrency()
+    {
+      // Just check the function returns more than zero - that means on the
+      // platform the tests run, some sort of concurrency can be determined.
+      CPPUNIT_ASSERT(twine::thread::hardware_concurrency() > 0);
     }
 };
 
