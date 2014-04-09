@@ -51,7 +51,7 @@ thread::id const thread::bad_thread_id = -1;
 /******************************************************************************
  * Helper functions
  **/
-namespace {
+TWINE_ANONS_START
 
 // Get a numeric thread ID.  We'll try to return an OS-specific handle.
 static thread::id get_pthread_id()
@@ -65,7 +65,7 @@ static thread::id get_pthread_id()
 #endif
 }
 
-} // anonymous namespace
+TWINE_ANONS_END
 
 
 /**
@@ -125,7 +125,7 @@ struct thread::thread_info
     //     immediately after start() was called. This would likely crash the
     //     program anyway (see thread dtor for details).
     scoped_lock<recursive_mutex> lock(tmp_thread->m_mutex);
-    m_id = get_pthread_id();
+    m_id = TWINE_ANONS(get_pthread_id)();
   }
 
   inline void detach_from_thread_object() const
@@ -163,13 +163,11 @@ struct thread::thread_info
 
 
 
-namespace {
-
-
+TWINE_ANONS_START
 
 
 // Thread wrapper function - takes ownership of the passed info structure
-static void * wrapper(void * arg)
+static void * thread_wrapper(void * arg)
 {
   thread::thread_info * info = static_cast<thread::thread_info *>(arg);
 
@@ -194,9 +192,7 @@ static void * wrapper(void * arg)
   return nullptr;
 }
 
-
-
-} // anonymous namespace
+TWINE_ANONS_END
 
 
 
@@ -244,15 +240,17 @@ thread::~thread()
 
 
 
-void
+bool
 thread::join()
 {
   scoped_lock<recursive_mutex> lock(m_mutex);
+  bool was_attached = m_is_attached;
   if (m_is_attached) {
     m_is_attached = false;
     lock.unlock();
     ::pthread_join(m_handle, nullptr);
   }
+  return was_attached;
 }
 
 
@@ -327,7 +325,9 @@ thread::start(bool detach_now /* = false */)
   }
 
   // Try to launch thread
-  if (0 == ::pthread_create(&m_handle, nullptr, wrapper, tmp_info)) {
+  if (0 == ::pthread_create(&m_handle, nullptr,
+        TWINE_ANONS(thread_wrapper), tmp_info))
+  {
     if (detach_now) {
       ::pthread_detach(m_handle);
     }
@@ -356,7 +356,7 @@ namespace this_thread {
 
 thread::id get_id()
 {
-  return get_pthread_id();
+  return TWINE_ANONS(get_pthread_id)();
 }
 
 /**

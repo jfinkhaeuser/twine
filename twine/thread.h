@@ -29,10 +29,7 @@
 #include <twine/noncopyable.h>
 
 #include <twine/mutex.h>
-
-#if defined(TWINE_HAVE_NANOSLEEP)
-#  include <time.h>
-#endif
+#include <twine/chrono.h>
 
 #include <meta/nullptr.h>
 
@@ -97,9 +94,10 @@ public:
   bool joinable() const;
 
   /**
-   * Join a thread. This is a no-op on non-joinable objects.
+   * Join a thread. This is a no-op on non-joinable objects. Returns true if
+   * the thread was joined, false otherwise.
    **/
-  void join();
+  bool join();
 
   /**
    * Detach the thread from this thread object. The thread object becomes
@@ -145,7 +143,7 @@ public:
    **/
   struct thread_info;
 
-private:
+protected:
   friend struct thread_info;
 
   // Thread data
@@ -176,19 +174,15 @@ thread::id get_id();
 void yield();
 
 /**
- * Put the calling thread to sleep for the duration given in the period.
+ * Put the calling thread to sleep for the duration given in the period. Returns
+ * false on unexpected errors, true otherwise. Note that sleep_for() will ignore
+ * signals.
  **/
 template <typename periodT>
-void
+bool
 sleep_for(periodT const & period)
 {
-#if defined(TWINE_HAVE_NANOSLEEP)
-  ::timespec spec;
-  period.as(spec);
-  ::nanosleep(&spec, nullptr);
-#else
-#  error unimplemented
-#endif
+  return chrono::sleep(period.template convert<chrono::nanoseconds>());
 }
 
 } // namespace this_thread
