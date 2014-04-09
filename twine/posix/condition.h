@@ -26,7 +26,12 @@
 
 #include <twine/twine.h>
 
-#include <sys/time.h>
+#if defined(TWINE_HAVE_TIME_H)
+#  include <time.h>
+#else
+#  error POSIX threads require <time.h> for conditions
+#endif
+
 #include <errno.h>
 
 #include <meta/nullptr.h>
@@ -67,18 +72,11 @@ template <typename lockableT, typename durationT>
 bool
 condition::timed_wait(lockableT & lockable, durationT const & duration)
 {
-  ::timeval now;
-  ::gettimeofday(&now, nullptr);
+  chrono::nanoseconds delay = duration.template convert<chrono::nanoseconds>();
+  delay += chrono::now();
 
   ::timespec wakeup;
-  duration.as(wakeup);
-
-  wakeup.tv_sec += now.tv_sec;
-  wakeup.tv_nsec += now.tv_usec * 1000;
-  while (wakeup.tv_nsec >= 1000000000) {
-    ++wakeup.tv_sec;
-    wakeup.tv_nsec -= 1000000000;
-  }
+  delay.as(wakeup);
 
   int ret = pthread_cond_timedwait(&m_handle,
       &detail::unwrap_handle<pthread_mutex_t, lockableT>::get(lockable),
