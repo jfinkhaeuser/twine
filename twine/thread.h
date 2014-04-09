@@ -35,6 +35,11 @@
 
 namespace twine {
 
+/***************************************************************************
+ * Forward declarations
+ **/
+class tasklet;
+
 /**
  * Thread class
  *
@@ -143,8 +148,10 @@ public:
    **/
   struct thread_info;
 
-protected:
+private:
   friend struct thread_info;
+
+  friend class tasklet;
 
   // Thread data
   mutable recursive_mutex       m_mutex;
