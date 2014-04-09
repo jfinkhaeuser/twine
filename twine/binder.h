@@ -63,9 +63,9 @@ template <
 >
 struct binder1
 {
-  static void function(argT0 arg0, classT * obj)
+  static void function(argT0 arg0, void * baton)
   {
-    (obj->*funcT)(arg0, obj);
+    (static_cast<classT *>(baton)->*funcT)(arg0, baton);
   }
 };
 
@@ -75,9 +75,9 @@ template <
 >
 struct binder0
 {
-  static void function(classT * obj)
+  static void function(void * baton)
   {
-    (obj->*funcT)(obj);
+    (static_cast<classT *>(baton)->*funcT)(baton);
   }
 };
 
