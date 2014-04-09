@@ -30,6 +30,7 @@
 
 #include <twine/mutex.h>
 #include <twine/chrono.h>
+#include <twine/binder.h>
 
 #include <meta/nullptr.h>
 
@@ -76,6 +77,15 @@ public:
    **/
   // Typedef for the function type threads can run.
   typedef void (*function)(void *);
+
+  // Binder
+  template <
+    typename classT,
+    void (classT::*funcT)(void *)
+  >
+  struct binder : public twine::binder0<classT, funcT>
+  {
+  };
 
   // Thread ID
   typedef int64_t id;

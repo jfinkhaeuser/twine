@@ -63,6 +63,23 @@ void thread_sleep(void *)
   twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
 }
 
+struct bind_test
+{
+  bool called;
+
+  bind_test()
+    : called(false)
+  {
+  }
+
+  void member(void * baton)
+  {
+    CPPUNIT_ASSERT_EQUAL(static_cast<void*>(this), baton);
+    twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
+    called = true;
+  }
+};
+
 } // anonymous namespace
 
 class ThreadTest
@@ -74,6 +91,7 @@ public:
       CPPUNIT_TEST(testThisThread);
       CPPUNIT_TEST(testSingleThread);
       CPPUNIT_TEST(testMultipleThreads);
+      CPPUNIT_TEST(testBinder);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -259,6 +277,29 @@ private:
         // After both threads have been successfully joined, the baton's counter
         // should still be zero - incremented once and decremented once
         CPPUNIT_ASSERT_EQUAL(int(0), b.count);
+      }
+    }
+
+
+    void testBinder()
+    {
+      // Creation auto-starts
+      {
+        bind_test test;
+        CPPUNIT_ASSERT_EQUAL(false, test.called);
+
+        twine::thread th(
+            twine::thread::binder<bind_test, &bind_test::member>::function,
+            &test);
+        CPPUNIT_ASSERT_EQUAL(true, th.joinable());
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
+        CPPUNIT_ASSERT(twine::thread::bad_thread_id != th.get_id());
+        CPPUNIT_ASSERT(twine::this_thread::get_id() != th.get_id());
+
+        twine::this_thread::sleep_for(THREAD_TEST_SHORT_DELAY);
+        th.join(); // XXX must do this or it all crashes
+
+        CPPUNIT_ASSERT_EQUAL(true, test.called);
       }
     }
 };
