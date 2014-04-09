@@ -13,7 +13,9 @@ pkginclude_HEADERS = \
 	scoped_lock.h \
 	chrono.h \
 	thread.h \
-	condition.h
+	condition.h \
+	binder.h \
+	tasklet.h
 
 nobase_pkginclude_HEADERS = \
 	detail/unwrap_handle.h
@@ -37,7 +39,9 @@ libtwine_la_LIBADD = $(DEPS_LIBS)
 libtwine_la_LDFLAGS = -version-info 1:0:0
 
 libtwine_la_SOURCES = \
-	version.cpp
+	version.cpp \
+	chrono.cpp \
+	tasklet.cpp
 
 if HAVE_POSIX
 libtwine_la_SOURCES += \

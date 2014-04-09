@@ -16,4 +16,6 @@ testsuite_SOURCES = \
 	test_chrono.cpp \
 	test_thread.cpp \
 	test_condition.cpp \
+	test_binder.cpp \
+	test_tasklet.cpp \
 	testsuite.cpp
