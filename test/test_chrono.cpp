@@ -22,6 +22,8 @@
 
 #include <twine/chrono.h>
 
+#include <cstdlib>
+
 #include <sstream>
 
 
@@ -40,7 +42,9 @@ public:
       CPPUNIT_TEST(testConversion);
       CPPUNIT_TEST(testStreaming);
       CPPUNIT_TEST(testNow);
+      CPPUNIT_TEST(testSleep);
       CPPUNIT_TEST(testArithmetic);
+      CPPUNIT_TEST(testComparison);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -97,11 +101,17 @@ private:
       testT n(VALUE);
 
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), NANOSEC,  n.template as<tc::nanoseconds>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::nanoseconds(NANOSEC), n.template convert<tc::nanoseconds>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), MICROSEC, n.template as<tc::microseconds>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::microseconds(MICROSEC), n.template convert<tc::microseconds>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), MILLISEC, n.template as<tc::milliseconds>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::milliseconds(MILLISEC), n.template convert<tc::milliseconds>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), SEC,      n.template as<tc::seconds>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::seconds(SEC), n.template convert<tc::seconds>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), MIN,      n.template as<tc::minutes>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::minutes(MIN), n.template convert<tc::minutes>());
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), HOUR,     n.template as<tc::hours>());
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::hours(HOUR), n.template convert<tc::hours>());
 
       // The timespec value is always the same
       ::timespec t;
@@ -230,6 +240,22 @@ private:
 
 
 
+    void testSleep()
+    {
+      // Using now(), we can test that we sleep at least as long as specified.
+      namespace tc = twine::chrono;
+
+      tc::nanoseconds now = tc::now();
+      tc::sleep(tc::milliseconds(25).convert<tc::nanoseconds>());
+      tc::nanoseconds after = tc::now();
+
+      tc::nanoseconds diff = after - now;
+      CPPUNIT_ASSERT_MESSAGE("may fail if the system time changed or there is high CPU load",
+          std::labs(diff.raw() - 25000000) < 100000);
+    }
+
+
+
     void testArithmetic()
     {
       // We support very simple arithmetic on durations: addition and subtraction
@@ -284,7 +310,28 @@ private:
       // Changed, because s4 in seconds is 60
       CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(59), s2.raw());
       CPPUNIT_ASSERT_EQUAL(tc::default_repr_t(59), s2.as<tc::seconds>());
+    }
 
+
+    void testComparison()
+    {
+      // A few simple comparison operations.
+      namespace tc = twine::chrono;
+
+      tc::nanoseconds nsec(10);
+      tc::hours h(3);
+
+      CPPUNIT_ASSERT(h > nsec);
+      CPPUNIT_ASSERT(h >= nsec);
+      CPPUNIT_ASSERT(nsec < h);
+      CPPUNIT_ASSERT(nsec <= h);
+
+      CPPUNIT_ASSERT(nsec != h);
+      CPPUNIT_ASSERT(h != nsec);
+
+      CPPUNIT_ASSERT(h == tc::hours(3));
+      CPPUNIT_ASSERT(h == tc::minutes(3 * 60));
+      CPPUNIT_ASSERT(h == tc::seconds(3 * 60 * 60));
     }
 };
 

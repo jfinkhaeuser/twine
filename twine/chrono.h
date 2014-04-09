@@ -26,8 +26,13 @@
 
 #include <twine/twine.h>
 
-#include <sys/types.h>
-#include <time.h>
+#if defined(TWINE_HAVE_SYS_TIME_H)
+#  include <sys/time.h>
+#endif
+
+#if defined(TWINE_HAVE_TIME_H)
+#  include <time.h>
+#endif
 
 #include <iostream>
 
@@ -58,8 +63,8 @@ typedef ::meta::math::ratio<default_repr_t, 3600>           hour_ratio;        /
 
 
 /**
- * Minimal implementation of a chrono::duration class similar to the C++11
- * standard.
+ * Implementation of a chrono::duration class similar to the C++11 standard,
+ * with some extended functionality.
  **/
 template <
   typename reprT,
@@ -96,6 +101,9 @@ struct duration
     return m_repr;
   }
 
+  /***************************************************************************
+   * Conversion to other ratios
+   **/
   template <
     typename target_ratioT
   >
@@ -109,6 +117,32 @@ struct duration
     return (m_repr * final_ratio_t::DIVIDEND) / final_ratio_t::DIVISOR;
   }
 
+  template <
+    typename target_ratioT
+  >
+  inline target_ratioT convert() const
+  {
+    return target_ratioT(as<target_ratioT>());
+  }
+
+  /***************************************************************************
+   * Conversion to system time/duration values
+   **/
+#if defined(TWINE_HAVE_SYS_TIME_H)
+  inline void as(::timeval & val) const
+  {
+    typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
+    val.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND) / second_ratio_t::DIVISOR);
+
+    typedef typename ::meta::math::invert<second_ratio_t>::type inverse_t;
+    default_repr_t remainder = m_repr - ((default_repr_t(val.tv_sec) * inverse_t::DIVIDEND) / inverse_t::DIVISOR);
+
+    typedef ::meta::math::divide_ratios<ratioT, microsecond_ratio> microsecond_ratio_t;
+    val.tv_usec = long((remainder * microsecond_ratio_t::DIVIDEND) / microsecond_ratio_t::DIVISOR);
+  }
+#endif
+
+#if defined(TWINE_HAVE_TIME_H)
   inline void as(::timespec & spec) const
   {
     typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
@@ -120,7 +154,11 @@ struct duration
     typedef ::meta::math::divide_ratios<ratioT, nanosecond_ratio> nanosecond_ratio_t;
     spec.tv_nsec = long((remainder * nanosecond_ratio_t::DIVIDEND) / nanosecond_ratio_t::DIVISOR);
   }
+#endif
 
+  /***************************************************************************
+   * Simple arithmetic operators
+   **/
   template <typename target_ratioT>
   inline duration & operator+=(duration<reprT, target_ratioT> const & other)
   {
@@ -136,7 +174,7 @@ struct duration
   }
 
   template <typename target_ratioT>
-  inline duration operator+(duration<reprT, target_ratioT> const & other)
+  inline duration operator+(duration<reprT, target_ratioT> const & other) const
   {
     duration<reprT, ratioT> tmp = *this;
     tmp += other;
@@ -144,11 +182,50 @@ struct duration
   }
 
   template <typename target_ratioT>
-  inline duration operator-(duration<reprT, target_ratioT> const & other)
+  inline duration operator-(duration<reprT, target_ratioT> const & other) const
   {
     duration<reprT, ratioT> tmp = *this;
     tmp -= other;
     return tmp;
+  }
+
+  /***************************************************************************
+   * Comparison operators
+   **/
+  template <typename target_ratioT>
+  inline bool operator>(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr > other.template as<ratioT>());
+  }
+
+  template <typename target_ratioT>
+  inline bool operator<(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr < other.template as<ratioT>());
+  }
+
+  template <typename target_ratioT>
+  inline bool operator>=(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr >= other.template as<ratioT>());
+  }
+
+  template <typename target_ratioT>
+  inline bool operator<=(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr <= other.template as<ratioT>());
+  }
+
+  template <typename target_ratioT>
+  inline bool operator==(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr == other.template as<ratioT>());
+  }
+
+  template <typename target_ratioT>
+  inline bool operator!=(duration<reprT, target_ratioT> const & other) const
+  {
+    return (m_repr != other.template as<ratioT>());
   }
 
 private:
@@ -234,6 +311,13 @@ operator<<(std::ostream & os, duration<reprT, ratioT> const & d)
  * return value will have the underlying system's resolution.
  **/
 nanoseconds now();
+
+/**
+ * Sleep for the specified nanoseconds. Returns true if woken up after the
+ * specified time, false on error. Note that the underlying system call may
+ * not have the resolution you specify here.
+ **/
+bool sleep(nanoseconds const & nsec);
 
 }} // namespace twine::chrono
 

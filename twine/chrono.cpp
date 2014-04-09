@@ -27,6 +27,16 @@
 #  error Cannot compile on this system.
 #endif
 
+#if defined(TWINE_HAVE_NANOSLEEP)
+#  include <time.h>
+#elif defined(TWINE_HAVE_SYS_SELECT_H)
+#  include <sys/select.h>
+#else
+#  error Cannot compile on this system.
+#endif
+
+#include <errno.h>
+
 #include <meta/nullptr.h>
 
 namespace twine {
@@ -40,7 +50,69 @@ nanoseconds now()
 
   return nanoseconds(default_repr_t((tv.tv_sec * 1000000000) + (tv.tv_usec * 1000)));
 #else
-  return 0;
+#  error no implementation of now() available.
+#endif
+}
+
+
+
+bool
+sleep(nanoseconds const & nsec)
+{
+#if defined(TWINE_HAVE_NANOSLEEP)
+
+  ::timespec spec;
+  nsec.as(spec);
+
+  while (-1 == ::nanosleep(&spec, &spec)) {
+    switch (errno) {
+      case EINTR:
+        continue;
+
+      case EFAULT:
+      case EINVAL:
+        return false; // XXX Can't really do anything here.
+    }
+  }
+  return true;
+
+#elif defined(TWINE_HAVE_SYS_SELECT_H)
+
+  nanoseconds start = now();
+  nanoseconds remain = nsec;
+  do {
+    ::timeval tv;
+    remain.as(tv);
+
+    int ret = ::select(0, nullptr, nullptr, nullptr, &tv);
+    if (0 == ret) {
+      break;
+    }
+
+    // Error handling really exists only because of EINTR - in which case we
+    // may want to sleep again, for the remainder of the specified interval.
+    if (-1 == ret) {
+      switch (errno) {
+        case EINTR:
+          remain -= now() - start;
+          break;
+
+        case EINVAL:
+        case ENOMEM:
+        default:
+          return false;
+          break;
+      }
+    }
+
+    // ret is neither 0 nor -1 - very unexpected.
+    return false;
+
+  } while (remain > nanoseconds(0));
+
+  return true;
+#else
+#  error no implementation of sleep() available.
 #endif
 }
 
