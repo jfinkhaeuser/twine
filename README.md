@@ -17,7 +17,7 @@ So why start twine if `TinyThread++` already meets those requirements?
   system-wide; in particular it supports the
   [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/) standard.
 - Twine adds a few convenient multithreading-related constructs such as the
-  `tasklet` class and futures.
+  `tasklet` class, extended functionality, etc.
 
 That said, `TinyThread++` may well be what you're looking for, precisely because
 those differences have side-effects you might not like. It's cool, I won't hate
