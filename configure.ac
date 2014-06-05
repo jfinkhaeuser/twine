@@ -98,6 +98,8 @@ JF_CHECK_FUNC_IN([unistd.h], [_SC_NPROCESSORS_ONLN],
     [sysconf(_SC_NPROCESSORS_ONLN);])
 JF_CHECK_FUNC_IN([unistd.h], [_SC_NPROC_ONLN],
     [sysconf(_SC_NPROC_ONLN);])
+JF_CHECK_FUNC_IN([sys/types.h sys/sysctl.h], [HW_NCPU],
+    [int a = HW_NCPU;])
 
 
 ##############################################################################

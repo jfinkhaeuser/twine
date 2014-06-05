@@ -25,6 +25,11 @@
 #include <sys/types.h>
 #endif
 
+#if defined(TWINE_HAVE_HW_NCPU)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
+
 #if defined(TWINE_HAVE_SCHED_YIELD)
 #include <sched.h>
 #endif
@@ -353,10 +358,22 @@ thread::get_id() const
 uint32_t
 thread::hardware_concurrency()
 {
-#if defined(TWINE_HAVE__SC_NPROCESSORS_ONLN)
+#if defined(TWINE_HAVE_HW_NCPU)
+  int data[] = { CTL_HW, HW_NCPU };
+  int cpus = -1;
+  size_t size = sizeof(cpus);
+  int rc = ::sysctl(data, 2, &cpus, &size, NULL, 0);
+  if (rc >= 0) {
+    return cpus;
+  }
+  // fall through
+
+#elif defined(TWINE_HAVE__SC_NPROCESSORS_ONLN)
   return ::sysconf(_SC_NPROCESSORS_ONLN);
+
 #elif defined(TWINE_HAVE__SC_NPROC_ONLN)
   return ::sysconf(_SC_NPROC_ONLN);
+
 #endif
   return 0;
 }
