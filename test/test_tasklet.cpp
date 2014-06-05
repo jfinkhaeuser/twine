@@ -1,27 +1,21 @@
 /**
- * $Id: tasklet.h 337 2011-01-07 21:46:21Z jens $
+ * This file is part of twine.
  *
- * This file is part of the Fhtagn! C++ Library.
- * Copyright (C) 2009,2010,2011 Jens Finkhaeuser <unwesen@users.sourceforge.net>.
+ * Author(s): Jens Finkhaeuser <jens@unwesen.co.uk>
  *
- * Author: Jens Finkhaeuser <unwesen@users.sourceforge.net>
+ * Copyright (c) 2014 Unwesen Ltd.
  *
- * This program is licensed as free software for personal, educational or
- * other non-commerical uses: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
+ * This software is licensed under the terms of the GNU GPLv3 for personal,
+ * educational and non-profit use. For all other uses, alternative license
+ * options are available. Please contact the copyright holder for additional
+ * information, stating your intended usage.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * You can find the full text of the GPLv3 in the COPYING file in this code
+ * distribution.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Alternatively, licenses for commercial purposes are available as well.
- * Please send your enquiries to the copyright holder's address above.
+ * This software is distributed on an "AS IS" BASIS, WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  **/
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -92,6 +86,7 @@ public:
     CPPUNIT_TEST(testTaskletSleep);
     CPPUNIT_TEST(testTaskletMemFun);
     CPPUNIT_TEST(testTaskletScope);
+    CPPUNIT_TEST(testSharedCondition);
 
   CPPUNIT_TEST_SUITE_END();
 private:
@@ -212,6 +207,35 @@ private:
       task.start();
       task.stop();
     }
+  }
+
+
+  void testSharedCondition()
+  {
+    count = 0;
+
+    twine::condition cond;
+    twine::recursive_mutex mutex;
+
+    twine::tasklet t1(&cond, &mutex, counter, nullptr, true);
+    twine::tasklet t2(&cond, &mutex, counter, nullptr, true);
+
+    twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
+
+    t1.wakeup(); // also wakes up t2
+
+    twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
+
+    // Both get woken
+    CPPUNIT_ASSERT_EQUAL(int(2), count);
+
+    // One gets stopped by this
+    t1.stop();
+    twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
+    CPPUNIT_ASSERT_EQUAL(int(3), count);
+
+    // Now both should be stopped.
+    t2.stop();
   }
 };
 

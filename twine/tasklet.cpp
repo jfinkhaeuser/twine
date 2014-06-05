@@ -48,12 +48,31 @@ static void tasklet_wrapper(void * arg)
 TWINE_ANONS_END
 
 
+tasklet::tasklet(twine::condition * condition, twine::recursive_mutex * mutex,
+    tasklet::function func, void * baton /* = nullptr */, bool start_now /* = false */)
+  : thread()
+  , m_tasklet_info(new tasklet_info(this, func, baton))
+  , m_running(false)
+  , m_condition(condition)
+  , m_tasklet_mutex(mutex)
+  , m_condition_owned(false)
+{
+  thread::set_func(TWINE_ANONS(tasklet_wrapper), m_tasklet_info);
+  if (start_now) {
+    start();
+  }
+}
+
+
+
 tasklet::tasklet(tasklet::function func, void * baton /* = nullptr */,
     bool start_now /* = false */)
   : thread()
   , m_tasklet_info(new tasklet_info(this, func, baton))
-  , m_blargh()
   , m_running(false)
+  , m_condition(new twine::condition())
+  , m_tasklet_mutex(&m_mutex)
+  , m_condition_owned(true)
 {
   thread::set_func(TWINE_ANONS(tasklet_wrapper), m_tasklet_info);
   if (start_now) {
@@ -68,6 +87,10 @@ tasklet::~tasklet()
   stop();
   wait();
   delete m_tasklet_info;
+
+  if (m_condition_owned) {
+    delete m_condition;
+  }
 }
 
 
@@ -75,7 +98,7 @@ tasklet::~tasklet()
 bool
 tasklet::start()
 {
-  scoped_lock<recursive_mutex> lock(thread::m_mutex);
+  scoped_lock<recursive_mutex> lock(*m_tasklet_mutex);
 
   if (thread::joinable()) {
     return false;
@@ -91,14 +114,20 @@ tasklet::start()
 bool
 tasklet::stop()
 {
-  scoped_lock<recursive_mutex> lock(thread::m_mutex);
+  scoped_lock<recursive_mutex> lock(*m_tasklet_mutex);
 
   if (!thread::joinable()) {
     return false;
   }
 
   m_running = false;
-  m_blargh.notify_one();
+
+  if (m_condition_owned) {
+    m_condition->notify_one();
+  }
+  else {
+    m_condition->notify_all();
+  }
 
   return true;
 }
@@ -108,7 +137,10 @@ tasklet::stop()
 bool
 tasklet::wait()
 {
-  return thread::join();
+  // We ignore if it was joinable or not. That's because in the case of a tasklet,
+  // you really want to wait for the tasklet to end.
+  thread::join();
+  return true;
 }
 
 
@@ -116,7 +148,12 @@ tasklet::wait()
 void
 tasklet::wakeup()
 {
-  m_blargh.notify_one();
+  if (m_condition_owned) {
+    m_condition->notify_one();
+  }
+  else {
+    m_condition->notify_all();
+  }
 }
 
 
@@ -124,7 +161,7 @@ tasklet::wakeup()
 bool
 tasklet::nanosleep(twine::chrono::nanoseconds nsecs) const
 {
-  scoped_lock<recursive_mutex> lock(thread::m_mutex);
+  scoped_lock<recursive_mutex> lock(*m_tasklet_mutex);
 
   if (!m_running) {
     return false;
@@ -132,12 +169,12 @@ tasklet::nanosleep(twine::chrono::nanoseconds nsecs) const
 
   // Negative numbers mean sleep infinitely.
   if (nsecs < twine::chrono::nanoseconds(0)) {
-    m_blargh.wait(thread::m_mutex);
+    m_condition->wait(*m_tasklet_mutex);
     return m_running;
   }
 
   // Sleep for a given time period only.
-  m_blargh.timed_wait(thread::m_mutex, twine::chrono::nanoseconds(nsecs));
+  m_condition->timed_wait(*m_tasklet_mutex, twine::chrono::nanoseconds(nsecs));
   return m_running;
 }
 

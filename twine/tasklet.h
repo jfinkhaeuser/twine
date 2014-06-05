@@ -96,7 +96,23 @@ public:
   /***************************************************************************
    * Constructor/destructor
    **/
+  /**
+   * Create a tasklet either with or without a condition. If created with
+   * a condition, it shares the given condition, possibly with other tasklet
+   * instances. Note that if you provide a shared condition, you will also
+   * need to provide a shared recursive_mutex for waiting.
+   *
+   * Note that stop() and wakeup() will usually call notify_one() on an owned
+   * condition object, such that the semantics of waking a tasklet out of
+   * sleep() are met. For a shared condition object, that doesn't work quite
+   * the same way; for that reason, the condition's notify_all() will be
+   * called.
+   *
+   * If you don't want that, use the condition object you're passing directly.
+   **/
   tasklet(function func, void * baton = nullptr, bool start_now = false);
+  tasklet(twine::condition * condition, twine::recursive_mutex * wait_mutex,
+      function func, void * baton = nullptr, bool start_now = false);
 
   virtual ~tasklet();
 
@@ -172,10 +188,16 @@ private:
    **/
   bool nanosleep(twine::chrono::nanoseconds nsecs) const;
 
-  // Data
-  struct tasklet_info *     m_tasklet_info;
-  mutable twine::condition  m_blargh;
-  volatile bool             m_running;
+  /***************************************************************************
+   * Data
+   **/
+  struct tasklet_info *             m_tasklet_info;
+
+  volatile bool                     m_running;
+
+  mutable twine::condition *        m_condition;
+  mutable twine::recursive_mutex *  m_tasklet_mutex;
+  bool                              m_condition_owned;
 };
 
 } // namespace twine
