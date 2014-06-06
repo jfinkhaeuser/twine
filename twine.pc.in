@@ -7,5 +7,5 @@ Name: twine
 Description: Twine is a very small threading library for C++.
 Requires: meta >= 0.1
 Version: @PACKAGE_VERSION@
-Libs: @PTHREAD_LIBS@ @META_LIBS@
-Cflags: -I${includedir} @PTHREAD_CFLAGS@ @META_CFLAGS@
+Libs: @PTHREAD_LIBS@ -L@libdir@ -ltwine
+Cflags: @PTHREAD_CFLAGS@ -I${includedir}
