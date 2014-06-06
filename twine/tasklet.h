@@ -111,7 +111,7 @@ public:
    * If you don't want that, use the condition object you're passing directly.
    **/
   tasklet(function func, void * baton = nullptr, bool start_now = false);
-  tasklet(twine::condition * condition, twine::recursive_mutex * wait_mutex,
+  tasklet(twine::condition * condition, twine::recursive_mutex * mutex,
       function func, void * baton = nullptr, bool start_now = false);
 
   virtual ~tasklet();
