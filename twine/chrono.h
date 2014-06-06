@@ -334,13 +334,6 @@ nanoseconds now();
  * specified time, false on error. Note that the underlying system call may
  * not have the resolution you specify here.
  **/
-template <typename durationT>
-inline bool
-sleep(durationT const & duration)
-{
-  return sleep(duration.template convert<nanoseconds>());
-}
-
 bool sleep(nanoseconds const & nsec);
 
 }} // namespace twine::chrono
