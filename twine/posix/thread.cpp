@@ -66,6 +66,7 @@ static thread::id get_pthread_id()
 #elif defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
   return ::pthread_getthreadid_np();
 #else
+#error can't compile on this system; no known way to determine thread ID.
   return thread::bad_thread_id;
 #endif
 }
