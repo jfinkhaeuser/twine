@@ -20,6 +20,15 @@ endif (TWINE_USE_CXX11)
 
 
 ##############################################################################
+# Dependencies
+find_package(Threads)
+
+include(FindPkgConfig)
+pkg_check_modules(META meta>=0.1)
+pkg_check_modules(CPPUNIT cppunit>=1.12)
+
+
+##############################################################################
 # Headers
 include(CheckIncludeFileCXX)
 check_include_file_cxx(sys/time.h TWINE_HAVE_SYS_TIME_H)
@@ -44,8 +53,10 @@ check_type_size(ssize_t SSIZE_T)
 # Functions
 include(CheckFunctionExists)
 check_function_exists(nanosleep TWINE_HAVE_NANOSLEEP)
-check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
 check_function_exists(sched_yield TWINE_HAVE_SCHED_YIELD)
+
+SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
+check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
 
 
 ##############################################################################
@@ -90,14 +101,6 @@ int main(int, char**)
 }
 " TWINE_HAVE__SC_NPROC_ONLN)
 
-
-##############################################################################
-# Dependencies
-find_package(Threads)
-
-include(FindPkgConfig)
-pkg_check_modules(META meta>=0.1)
-pkg_check_modules(CPPUNIT cppunit>=1.12)
 
 
 ##############################################################################
@@ -166,9 +169,9 @@ include_directories(
 )
 
 # Add library flags
-set (CMAKE_CXX_FLAGS          "${META_CFLAGS} ${CMAKE_CXX_FLAGS}")
-set (CMAKE_CXX_FLAGS_DEBUG    "${META_CFLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
-set (CMAKE_CXX_FLAGS_RELEASE  "${META_CFLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
+set (CMAKE_CXX_FLAGS          "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAGS}")
+set (CMAKE_CXX_FLAGS_DEBUG    "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
+set (CMAKE_CXX_FLAGS_RELEASE  "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 
 
 ##############################################################################
