@@ -27,7 +27,7 @@ std::pair<std::string, std::string> version()
 }
 
 
-char const * const copyright_string()
+char const * copyright_string()
 {
   static char const * const ret =
     TWINE_PACKAGE_NAME " " TWINE_PACKAGE_VERSION " " TWINE_PACKAGE_URL "\n"
@@ -40,7 +40,7 @@ char const * const copyright_string()
 }
 
 
-char const * const license_string()
+char const * license_string()
 {
   static char const * const ret =
     "This software is licensed under the terms of the GNU GPLv3 for personal,\n"
