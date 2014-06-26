@@ -1,11 +1,11 @@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@libdir@
-includedir=@includedir@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
 
 Name: twine
 Description: Twine is a very small threading library for C++.
 Requires: meta >= 0.1
-Version: @PACKAGE_VERSION@
-Libs: @PTHREAD_LIBS@ -L@libdir@ -ltwine
-Cflags: @PTHREAD_CFLAGS@ -I${includedir}
+Version: @TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@
+Libs: -L${libdir} -ltwine @CMAKE_THREAD_LIBS_INIT@
+Cflags: -I${includedir}

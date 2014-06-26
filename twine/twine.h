@@ -27,8 +27,11 @@
 #include <twine/twine-config.h>
 
 #include <stdint.h>
-#include <unistd.h>
 #include <stdlib.h>
+
+#if defined(TWINE_HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 // Which platform are we on?
 #if !defined(TWINE_PLATFORM_DEFINED_)
@@ -53,11 +56,6 @@
   #endif
 #else
   #include <pthread.h>
-#endif
-
-// Meta-related defines
-#if !defined(TWINE_HAVE_STDCXX_0X)
-#  define META_NEED_NULLPTR_COMPATIBILITY
 #endif
 
 // Make anonymous namespaces non-anonymous in debugging compilations.

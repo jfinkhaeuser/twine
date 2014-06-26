@@ -1,0 +1,60 @@
+#ifndef TWINE_TWINE_CONFIG_H
+#define TWINE_TWINE_CONFIG_H
+
+/*****************************************************************************
+ * Project metadata
+ **/
+// Name
+#define TWINE_PACKAGE_NAME "@CMAKE_PROJECT_NAME@"
+
+// Version
+#define TWINE_PACKAGE_MAJOR "@TWINE_PACKAGE_MAJOR@"
+#define TWINE_PACKAGE_MINOR "@TWINE_PACKAGE_MINOR@"
+#define TWINE_PACKAGE_VERSION "@TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@"
+
+// URL
+#define TWINE_PACKAGE_URL "@TWINE_PACKAGE_URL@"
+
+
+/*****************************************************************************
+ * Options
+ **/
+/**
+ * Defining the build mode for meta.
+ **/
+#define META_CXX_MODE @META_CXX_MODE@
+
+
+/*****************************************************************************
+ * Headers
+ **/
+#cmakedefine TWINE_HAVE_SYS_TIME_H
+#cmakedefine TWINE_HAVE_SYS_TYPES_H
+#cmakedefine TWINE_HAVE_SYS_SELECT_H
+#cmakedefine TWINE_HAVE_TIME_H
+#cmakedefine TWINE_HAVE_UNISTD_H
+
+
+/*****************************************************************************
+ * Functions
+ **/
+#cmakedefine TWINE_HAVE_NANOSLEEP
+#cmakedefine TWINE_HAVE_PTHREAD_GETTHREADID_NP
+#cmakedefine TWINE_HAVE_SCHED_YIELD
+
+
+/*****************************************************************************
+ * Symbols
+ **/
+#cmakedefine TWINE_HAVE_GETTID
+#cmakedefine TWINE_HAVE_HW_NCPU
+#cmakedefine TWINE_HAVE__SC_NPROCESSORS_ONLN
+#cmakedefine TWINE_HAVE__SC_NPROC_ONLN
+
+
+/*****************************************************************************
+ * Platform checks
+ **/
+#define TWINE_BIGENDIAN @TWINE_BIGENDIAN@
+
+#endif // guard
