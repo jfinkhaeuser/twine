@@ -289,7 +289,7 @@ operator<<(std::ostream & os, duration<reprT, ratioT> const & d)
     {             1, '\0', 8 },
   };
 
-  for (int i = 0 ; i < sizeof(conv) / sizeof(conv[0]) ; ++i) {
+  for (size_t i = 0 ; i < sizeof(conv) / sizeof(conv[0]) ; ++i) {
     // Get the value for the current position
     reprT val = tmp / conv[i].limit;
     tmp = tmp % conv[i].limit;
