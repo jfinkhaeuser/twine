@@ -26,6 +26,8 @@
 
 #include <twine/twine.h>
 
+#include <meta/stackonly.h>
+
 #include <twine/mutex.h>
 
 namespace twine {
@@ -57,7 +59,7 @@ struct unwrap_handle;
 template <
   typename mutexT
 >
-class scoped_lock
+class scoped_lock : public meta::stackonly
 {
 public:
   scoped_lock(mutexT & mutex)
