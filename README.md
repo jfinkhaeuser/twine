@@ -54,8 +54,35 @@ After installing the requirements, run:
 $ cmake .
 ```
 
-This will configure the build system. Usually, you can just run the following commands to get going:
+This will configure the build system. You might want to make sure dependencies
+are found if they're not installed system wide:
+
+```bash
+$ PKG_CONFIG_PATH=/path/to/dir/lib/pkgconfig cmake .
+```
+
+Additionally, you might want to specify an installation prefix for the library
+and header files:
+
+```bash
+$ cmake -DCMAKE_INSTALL_PREFIX=/path/to-dir .
+```
+
+You can also switch on C++11 mode, which primarily uses the meta library with
+all C++11 features enabled.
+
+```bash
+$cmake -DTWINE_USE_CXX11=1 .
+```
+
+Usually, you can just run the following commands to get going:
 
 ```bash
 $ make testsuite && ./testsuite
+```
+
+Install using the `DESTDIR` environment variable, if necessary:
+
+```bash
+$ make DESTDIR=/some/prefix install
 ```
