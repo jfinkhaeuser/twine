@@ -65,7 +65,7 @@ Additionally, you might want to specify an installation prefix for the library
 and header files:
 
 ```bash
-$ cmake -DCMAKE_INSTALL_PREFIX=/path/to-dir .
+$ cmake -DCMAKE_INSTALL_PREFIX=/path/to/dir .
 ```
 
 You can also switch on C++11 mode, which primarily uses the meta library with
