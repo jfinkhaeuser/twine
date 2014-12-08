@@ -29,11 +29,18 @@ Features
 
 - Dual-licensed! Yes, that's a feature - it means you can use it in FLOSS for
   free, but can get a license for commercial software, too.
-- Very portable - tested under Windows, Mac OS X, Linux, FreeBSD and should
-  work under most POSIX compatible systems.
+- Portable - tested under Mac OS X, Linux, FreeBSD and should work under most
+  POSIX compatible systems.
 - Still relatively faithful to the C++11 standard. That doesn't mean the entire
   standard's thread-related scope is implemented.
 - Minimal overhead - most functions generate compact inline code.
+
+
+TODO
+----
+
+- Windows port. Some of the code is there, but the entire project needs to be
+  built & tested on Windows.
 
 
 Requirements
