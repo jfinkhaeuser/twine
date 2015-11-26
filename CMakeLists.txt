@@ -3,6 +3,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(twine)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
+
 set (TWINE_PACKAGE_MAJOR 0)
 set (TWINE_PACKAGE_MINOR 1)
 set (TWINE_PACKAGE_URL https://github.com/jfinkhaeuser/twine)
@@ -38,7 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message("Selecting compiler flags for GNU c++")
 
-  set (GNUCXX_CXX_FLAGS "-Wall -Wextra -Wabi -Wold-style-cast -Wstrict-null-sentinel"
+  set (GNUCXX_CXX_FLAGS "-Wall -Wextra -Wold-style-cast -Wstrict-null-sentinel"
       CACHE STRING "Default flags for G++")
   if (TWINE_USE_CXX11)
     set (GNUCXX_CXX_FLAGS_STD "-std=c++0x -Wc++0x-compat")
@@ -270,4 +272,12 @@ if (CPPUNIT_FOUND)
       ${CPPUNIT_LDFLAGS})
 
   add_test(NAME "Testsuite" COMMAND testsuite)
+  set(PROJECT_TEST_NAME testsuite)
+
+  # Code coverage
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    include(CodeCoverage)
+    setup_target_for_coverage(coverage ${PROJECT_TEST_NAME} coverage)
+    target_link_libraries(${PROJECT_TEST_NAME} gcov)
+  endif()
 endif (CPPUNIT_FOUND)
