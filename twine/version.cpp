@@ -32,6 +32,7 @@ char const * copyright_string()
   static char const * const ret =
     TWINE_PACKAGE_NAME " " TWINE_PACKAGE_VERSION " " TWINE_PACKAGE_URL "\n"
     "Copyright (c) 2014 Unwesen Ltd.\n"
+    "Copyright (c) 2015 Jens Finkhaeuser.\n"
     "Licensed under the the GPLv3 for personal, educational or non-profit use.\n"
     "Other licensing options available; please contact the copyright holder for\n"
     "information."
