@@ -4,3 +4,6 @@
 [submodule "scripts/chroot"]
 	path = scripts/chroot
 	url = https://github.com/jfinkhaeuser/build-chroot.git
+[submodule "deps/meta"]
+	path = deps/meta
+	url = https://github.com/jfinkhaeuser/meta.git

@@ -6,29 +6,29 @@ matrix:
     - os: linux
       dist: xenial
       compiler: clang
-      env: ARCH=x86_64 META_USE_CXX11=ON
+      env: ARCH=x86_64 TWINE_USE_CXX11=ON
     # GCC/Linux/x86_64
     # We test both with and without C++11 features
     - os: linux
       dist: xenial
       compiler: gcc
-      env: ARCH=x86_64 META_USE_CXX11=ON
+      env: ARCH=x86_64 TWINE_USE_CXX11=ON
     # Clang/OSX/x86_64
     # We test only with C++11 features - without was already verified on Linux
     - os: osx
       compiler: clang
-      env: ARCH=x86_64 META_USE_CXX11=ON
+      env: ARCH=x86_64 TWINE_USE_CXX11=ON
     # GCC/Linux/armhf
     # We test only with C++11 features - without was already verified on Linux
     - os: linux
       dist: xenial
       compiler: gcc
-      env: ARCH=armhf META_USE_CXX11=ON
+      env: ARCH=armhf TWINE_USE_CXX11=ON
     # GCC/Linux/mips
     # We test only with C++11 features - without was already verified on Linux
     - os: linux
       dist: xenial
       compiler: gcc
-      env: ARCH=mips META_USE_CXX11=ON
+      env: ARCH=mips TWINE_USE_CXX11=ON
 script:
   - ./build.sh "${ARCH}" "${TRAVIS_OS_NAME}" "${TRAVIS_BUILD_DIR}"
