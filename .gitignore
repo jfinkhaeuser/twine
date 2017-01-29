@@ -16,3 +16,6 @@ twine.pc
 *.a
 *.lo
 *.la
+
+# build directory
+build
