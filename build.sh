@@ -79,11 +79,20 @@ echo "======================================================================="
 echo "Running build"
 echo "Environment: $(uname -a)"
 
+for dir in "${SOURCE_DIR}/deps/"* ; do
+  cd "${dir}"
+  rm -rf build
+  mkdir build
+  cd build
+  cmake -DCMAKE_BUILD_TYPE=Release ..
+  sudo make install
+done
+
 cd "${SOURCE_DIR}"
 rm -rf build
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DMETA_USE_CXX11=${META_USE_CXX11} ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make testsuite
 ./testsuite
 
