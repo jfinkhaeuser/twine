@@ -1,0 +1,3 @@
+[submodule "scripts/dependencies"]
+	path = scripts/dependencies
+	url = https://github.com/jfinkhaeuser/build-dependencies.git
