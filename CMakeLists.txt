@@ -87,6 +87,7 @@ check_type_size(ssize_t SSIZE_T)
 include(CheckFunctionExists)
 check_function_exists(nanosleep TWINE_HAVE_NANOSLEEP)
 check_function_exists(sched_yield TWINE_HAVE_SCHED_YIELD)
+check_function_exists(clock_gettime TWINE_HAVE_CLOCK_GETTIME)
 
 SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
