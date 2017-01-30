@@ -1,9 +1,10 @@
 /**
  * This file is part of twine.
  *
- * Author(s): Jens Finkhaeuser <jens@unwesen.co.uk>
+ * Author(s): Jens Finkhaeuser <jens@finkhaeuser.de>
  *
  * Copyright (c) 2014 Unwesen Ltd.
+ * Copyright (c) 2015-2017 Jens Finkhaeuser.
  *
  * This software is licensed under the terms of the GNU GPLv3 for personal,
  * educational and non-profit use. For all other uses, alternative license
@@ -32,7 +33,7 @@ char const * copyright_string()
   static char const * const ret =
     TWINE_PACKAGE_NAME " " TWINE_PACKAGE_VERSION " " TWINE_PACKAGE_URL "\n"
     "Copyright (c) 2014 Unwesen Ltd.\n"
-    "Copyright (c) 2015 Jens Finkhaeuser.\n"
+    "Copyright (c) 2015-2017 Jens Finkhaeuser.\n"
     "Licensed under the the GPLv3 for personal, educational or non-profit use.\n"
     "Other licensing options available; please contact the copyright holder for\n"
     "information."
