@@ -48,7 +48,10 @@ nanoseconds now()
   ::timeval tv;
   ::gettimeofday(&tv, nullptr);
 
-  return nanoseconds(default_repr_t((tv.tv_sec * 1000000000) + (tv.tv_usec * 1000)));
+  return nanoseconds(
+    (default_repr_t(tv.tv_sec) * 1000000000)
+    + (default_repr_t(tv.tv_usec) * 1000)
+  );
 #else
 #  error no implementation of now() available.
 #endif
