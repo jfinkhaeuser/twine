@@ -75,7 +75,7 @@ private:
 
 #if defined(TWINE_WIN32)
   CRITICAL_SECTION  m_handle;
-  volatile bool     m_already_locked;
+  volatile int      m_lock_count;
 #elif defined(TWINE_POSIX)
   pthread_mutex_t   m_handle;
 #endif

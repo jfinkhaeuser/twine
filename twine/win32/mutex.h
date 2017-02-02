@@ -35,9 +35,9 @@ template <
 >
 mutex_base<recursion_policyT>::mutex_base()
   : m_handle()
-  , m_already_locked(false)
+  , m_lock_count(0)
 {
-  InitializeCriticalSection(&mHandle);
+  InitializeCriticalSection(&m_handle);
 }
 
 
@@ -58,8 +58,23 @@ template <
 void
 mutex_base<recursion_policyT>::lock()
 {
-  // FIXME loop over m_already_locked? must be better stuff in Joost code base
-  EnterCriticalSection(&m_handle);
+  while (true) {
+    // First, try to enter the critical section. For recursive and non-recursive
+    // mutexes, this succeeds if the current thread owns the handle.
+    EnterCriticalSection(&m_handle);
+    ++m_lock_count;
+
+    // Perhaps the recursion policy disallows us entering recursively. In that
+    // case, we leave again immediately. We busy-loop trying to stay in this
+    // critical section.
+    if (recursion_policyT::may_not_enter(m_lock_count)) {
+      --m_lock_count;
+      LeaveCriticalSection(&m_handle);
+      continue;
+    }
+
+    break;
+  }
 }
 
 
@@ -70,14 +85,24 @@ template <
 bool
 mutex_base<recursion_policyT>::try_lock()
 {
+  // First, try to enter the critical section. For recursive and non-recursive
+  // mutexes, this succeeds if the current thread owns the handle.
   bool ret = TryEnterCriticalSection(&m_handle);
-  if (ret && m_already_locked) {
-    // FIXME this can't be right! this _unlocks_ an already locked
-    // mutex?
-    LeaveCriticalSection(&m_handle);
-    ret = false;
+  if (!ret) {
+    return false;
   }
-  return ret;
+  ++m_lock_count;
+
+  // Perhaps the recursion policy disallows us entering recursively. In that
+  // case, we leave again immediately. We busy-loop trying to stay in this
+  // critical section.
+  if (recursion_policyT::may_not_enter(m_lock_count)) {
+    --m_lock_count;
+    LeaveCriticalSection(&m_handle);
+    return false;
+  }
+
+  return true;
 }
 
 
@@ -88,8 +113,10 @@ template <
 void
 mutex_base<recursion_policyT>::unlock()
 {
-  m_already_locked = false;
-  LeaveCriticalSection(&m_handle);
+  if (m_lock_count > 0) {
+    --m_lock_count;
+    LeaveCriticalSection(&m_handle);
+  }
 }
 
 } // namespace twine

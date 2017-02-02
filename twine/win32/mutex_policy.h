@@ -36,9 +36,9 @@ namespace detail {
  **/
 struct nonrecursive_policy
 {
-  static inline void set_attributes(pthread_mutexattr_t * attr)
+  static inline bool may_not_enter(int const & lock_count)
   {
-// FIXME    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_NORMAL);
+    return (lock_count > 1);
   }
 };
 
@@ -49,9 +49,10 @@ struct nonrecursive_policy
  **/
 struct recursive_policy
 {
-  static inline void set_attributes(pthread_mutexattr_t * attr)
+  static inline bool may_not_enter(int const & lock_count)
   {
-// FIXME    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_RECURSIVE);
+    // We may always enter a critical section.
+    return false;
   }
 };
 
