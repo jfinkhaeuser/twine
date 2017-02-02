@@ -53,15 +53,6 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif ()
 
 ##############################################################################
-# Dependencies
-find_package(Threads)
-
-include(FindPkgConfig)
-pkg_check_modules(META meta>=0.1)
-pkg_check_modules(CPPUNIT cppunit>=1.12)
-
-
-##############################################################################
 # Headers
 include(CheckIncludeFileCXX)
 check_include_file_cxx(sys/time.h TWINE_HAVE_SYS_TIME_H)
@@ -137,6 +128,13 @@ int main(int, char**)
 
 
 
+
+##############################################################################
+# Dependencies
+find_package(Threads)
+find_package(meta 1.0)
+find_package(cppunit 1.12.1)
+
 ##############################################################################
 # Platform checks
 include(TestBigEndian)
@@ -169,6 +167,7 @@ configure_file(
 include_directories(
     "${PROJECT_SOURCE_DIR}"
     "${PROJECT_BINARY_DIR}"
+	"${META_INCLUDEDIR}"
 )
 
 # Add library flags
@@ -191,7 +190,8 @@ endif (UNIX)
 
 if (WIN32)
   set(LIB_SOURCES ${LIB_SOURCES}
-      twine/win32/thread.cpp)
+      twine/win32/thread.cpp
+	  twine/win32/time.cpp)
 endif (WIN32)
 
 add_library(twine_static STATIC ${LIB_SOURCES})
@@ -234,20 +234,21 @@ install(FILES
     twine/win32/mutex.h
     twine/win32/mutex_policy.h
     twine/win32/condition.h
-    DESTINATION include/twine/posix)
+	twine/win32/time.h
+    DESTINATION include/twine/win32)
 endif (WIN32)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/twine.pc
     DESTINATION lib/pkgconfig)
 
-install(TARGETS
-    twine_static ARCHIVE
-    DESTINATION lib)
-install(TARGETS
-    twine_shared LIBRARY
-    DESTINATION lib)
-
+#install(TARGETS
+#    twine_static ARCHIVE
+#    DESTINATION lib)
+#install(TARGETS
+#    twine_shared LIBRARY
+#    DESTINATION lib)
+#
 
 ##############################################################################
 # Tests
