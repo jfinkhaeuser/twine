@@ -56,7 +56,7 @@ struct time_reference
   LARGE_INTEGER m_starting_time;
 };
 
-time_reference global_reference = time_reference();
+time_reference const global_reference = time_reference();
 
 TWINE_ANONS_END
 
