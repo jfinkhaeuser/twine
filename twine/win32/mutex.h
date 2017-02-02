@@ -33,7 +33,7 @@ namespace twine {
 template <
   typename recursion_policyT
 >
-mutex_base::mutex_base()
+mutex_base<recursion_policyT>::mutex_base()
   : m_handle()
   , m_already_locked(false)
 {
@@ -45,7 +45,7 @@ mutex_base::mutex_base()
 template <
   typename recursion_policyT
 >
-mutex_base::~mutex_base()
+mutex_base<recursion_policyT>::~mutex_base()
 {
   DeleteCriticalSection(&m_handle);
 }
@@ -56,7 +56,7 @@ template <
   typename recursion_policyT
 >
 void
-mutex_base::lock()
+mutex_base<recursion_policyT>::lock()
 {
   // FIXME loop over m_already_locked? must be better stuff in Joost code base
   EnterCriticalSection(&m_handle);
@@ -68,7 +68,7 @@ template <
   typename recursion_policyT
 >
 bool
-mutex_base::try_lock()
+mutex_base<recursion_policyT>::try_lock()
 {
   bool ret = TryEnterCriticalSection(&m_handle);
   if (ret && m_already_locked) {
@@ -86,7 +86,7 @@ template <
   typename recursion_policyT
 >
 void
-mutex_base::unlock()
+mutex_base<recursion_policyT>::unlock()
 {
   m_already_locked = false;
   LeaveCriticalSection(&m_handle);

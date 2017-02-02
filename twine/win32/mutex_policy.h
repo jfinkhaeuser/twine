@@ -38,7 +38,7 @@ struct nonrecursive_policy
 {
   static inline void set_attributes(pthread_mutexattr_t * attr)
   {
-    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_NORMAL);
+// FIXME    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_NORMAL);
   }
 };
 
@@ -51,7 +51,7 @@ struct recursive_policy
 {
   static inline void set_attributes(pthread_mutexattr_t * attr)
   {
-    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_RECURSIVE);
+// FIXME    pthread_mutexattr_settype(attr, PTHREAD_MUTEX_RECURSIVE);
   }
 };
 
