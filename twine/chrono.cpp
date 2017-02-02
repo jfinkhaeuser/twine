@@ -24,6 +24,8 @@
 #  include <sys/time.h>
 #  include <sys/types.h>
 #  include <unistd.h>
+#elif defined(TWINE_WIN32)
+#  include <twine/win32/time.h>
 #else
 #  error Cannot compile on this system.
 #endif
