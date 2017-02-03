@@ -19,3 +19,6 @@ twine.pc
 
 # build directory
 build
+
+# Temporary directory
+tmp
