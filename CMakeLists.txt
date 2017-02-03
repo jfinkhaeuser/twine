@@ -167,7 +167,7 @@ configure_file(
 include_directories(
     "${PROJECT_SOURCE_DIR}"
     "${PROJECT_BINARY_DIR}"
-	"${META_INCLUDEDIR}"
+    "${META_INCLUDEDIR}"
 )
 
 # Add library flags
@@ -180,18 +180,19 @@ set (CMAKE_CXX_FLAGS_RELEASE  "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAG
 # Build artefacts
 set(LIB_SOURCES
     twine/version.cpp
-    twine/chrono.cpp
     twine/tasklet.cpp)
 
 if (UNIX)
   set(LIB_SOURCES ${LIB_SOURCES}
+      twine/posix/chrono.cpp
       twine/posix/thread.cpp)
 endif (UNIX)
 
 if (WIN32)
   set(LIB_SOURCES ${LIB_SOURCES}
+      twine/win32/chrono.cpp
       twine/win32/thread.cpp
-	  twine/win32/time.cpp)
+      twine/win32/time.cpp)
 endif (WIN32)
 
 add_library(twine_static STATIC ${LIB_SOURCES})

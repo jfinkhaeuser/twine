@@ -24,8 +24,6 @@
 #  include <sys/time.h>
 #  include <sys/types.h>
 #  include <unistd.h>
-#elif defined(TWINE_WIN32)
-#  include <twine/win32/time.h>
 #else
 #  error Cannot compile on this system.
 #endif
@@ -47,8 +45,6 @@ namespace chrono {
 
 nanoseconds now()
 {
-#if defined(TWINE_HAVE_SYS_TIME_H) && defined(TWINE_HAVE_SYS_TYPES_H) && defined(TWINE_HAVE_UNISTD_H)
-
 #if TWINE_HAVE_CLOCK_GETTIME
   ::timespec ts;
   ::clock_gettime(CLOCK_REALTIME, &ts);
@@ -58,7 +54,7 @@ nanoseconds now()
     + (default_repr_t(tv.tv_nsec))
   );
 
-#else // TWINE_HAVE_CLOCK_GETTIME
+#elif defined(TWINE_HAVE_GETTIMEOFDAY)
   ::timeval tv;
   ::gettimeofday(&tv, nullptr);
 
@@ -66,7 +62,6 @@ nanoseconds now()
     (default_repr_t(tv.tv_sec) * 1000000000)
     + (default_repr_t(tv.tv_usec) * 1000)
   );
-#endif // TWINE_HAVE_CLOCK_GETTIME
 
 #else
 #  error no implementation of now() available.
