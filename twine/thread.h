@@ -42,6 +42,8 @@ namespace twine {
  **/
 class tasklet;
 
+
+
 /**
  * Thread class
  *
@@ -177,7 +179,7 @@ private:
   volatile bool                 m_is_attached;
 
 #if defined(TWINE_WIN32)
-  // TODO
+  HANDLE      m_handle;
 #elif defined(TWINE_POSIX)
   pthread_t   m_handle;
 #endif
@@ -211,6 +213,34 @@ sleep_for(periodT const & period)
 }
 
 } // namespace this_thread
+
+
+#if defined(TWINE_THREAD_DETAILS)
+namespace detail {
+
+/******************************************************************************
+ * Declarations for platform dependent detail functions
+ **/
+#if defined(TWINE_WIN32)
+#  define HANDLE_T HANDLE
+#elif defined(TWINE_POSIX)
+#  define HANDLE_T pthread_t
+#endif
+
+thread::id get_thread_id();
+
+void thread_join(HANDLE_T &);
+
+void thread_join(HANDLE_T &);
+
+void thread_detach(HANDLE_T &);
+
+int thread_create(HANDLE_T &, thread::thread_info *);
+
+
+} // namespace detail
+#endif // TWINE_THREAD_DETAILS
+
 
 } // namespace twine
 

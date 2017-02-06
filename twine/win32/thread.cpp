@@ -18,11 +18,13 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
+#define TWINE_THREAD_DETAILS 1
 #include <twine/thread.h>
+#undef TWINE_THREAD_DETAILS
+
+#include <twine/detail/thread_info.h>
 
 namespace twine {
-
-
 
 
 
