@@ -23,8 +23,6 @@
 
 #include <twine/thread.h>
 
-#include <sys/time.h>
-
 #include <twine/chrono.h>
 #include <twine/scoped_lock.h>
 
@@ -107,13 +105,11 @@ private:
       CPPUNIT_ASSERT_NO_THROW(twine::this_thread::yield());
 
       // Sleep
-      ::timeval before;
-      ::gettimeofday(&before, nullptr);
+      namespace tc = twine::chrono;
+      tc::nanoseconds before = tc::now();
       twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
-      ::timeval after;
-      ::gettimeofday(&after, nullptr);
-      CPPUNIT_ASSERT(after.tv_sec > before.tv_usec
-          || (after.tv_sec == before.tv_sec && after.tv_usec > before.tv_usec));
+      tc::nanoseconds after = tc::now();
+      CPPUNIT_ASSERT(after > before);
     }
 
 
