@@ -87,7 +87,7 @@ mutex_base<recursion_policyT>::try_lock()
 {
   // First, try to enter the critical section. For recursive and non-recursive
   // mutexes, this succeeds if the current thread owns the handle.
-  bool ret = TryEnterCriticalSection(&m_handle);
+  BOOL ret = TryEnterCriticalSection(&m_handle);
   if (!ret) {
     return false;
   }

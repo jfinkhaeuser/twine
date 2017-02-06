@@ -36,7 +36,7 @@ namespace detail {
  **/
 struct nonrecursive_policy
 {
-  static inline bool may_not_enter(int const & lock_count)
+  static inline bool may_not_enter(volatile int const & lock_count)
   {
     return (lock_count > 1);
   }
@@ -49,7 +49,7 @@ struct nonrecursive_policy
  **/
 struct recursive_policy
 {
-  static inline bool may_not_enter(int const & lock_count)
+  static inline bool may_not_enter(volatile int const & lock_count)
   {
     // We may always enter a critical section.
     return false;
