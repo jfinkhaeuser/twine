@@ -79,6 +79,7 @@ include(CheckFunctionExists)
 check_function_exists(nanosleep TWINE_HAVE_NANOSLEEP)
 check_function_exists(sched_yield TWINE_HAVE_SCHED_YIELD)
 check_function_exists(clock_gettime TWINE_HAVE_CLOCK_GETTIME)
+check_function_exists(gettimeofday TWINE_HAVE_GETTIMEOFDAY)
 
 SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
@@ -180,6 +181,7 @@ set (CMAKE_CXX_FLAGS_RELEASE  "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAG
 # Build artefacts
 set(LIB_SOURCES
     twine/version.cpp
+    twine/thread.cpp
     twine/tasklet.cpp)
 
 if (UNIX)

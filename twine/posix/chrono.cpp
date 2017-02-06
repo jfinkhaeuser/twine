@@ -45,13 +45,13 @@ namespace chrono {
 
 nanoseconds now()
 {
-#if TWINE_HAVE_CLOCK_GETTIME
+#if defined(TWINE_HAVE_CLOCK_GETTIME)
   ::timespec ts;
   ::clock_gettime(CLOCK_REALTIME, &ts);
 
   return nanoseconds(
-    (default_repr_t(tv.tv_sec) * 1000000000)
-    + (default_repr_t(tv.tv_nsec))
+    (default_repr_t(ts.tv_sec) * 1000000000)
+    + (default_repr_t(ts.tv_nsec))
   );
 
 #elif defined(TWINE_HAVE_GETTIMEOFDAY)

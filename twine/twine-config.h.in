@@ -39,8 +39,10 @@
  * Functions
  **/
 #cmakedefine TWINE_HAVE_NANOSLEEP
-#cmakedefine TWINE_HAVE_PTHREAD_GETTHREADID_NP
 #cmakedefine TWINE_HAVE_SCHED_YIELD
+#cmakedefine TWINE_HAVE_CLOCK_GETTIME
+#cmakedefine TWINE_HAVE_GETTIMEOFDAY
+#cmakedefine TWINE_HAVE_PTHREAD_GETTHREADID_NP
 
 
 /*****************************************************************************
