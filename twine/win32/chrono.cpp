@@ -61,6 +61,45 @@ struct time_reference
 
 time_reference const global_reference = time_reference();
 
+
+/**
+ * High performance timer for getting the sleep function more precise.
+ */
+struct timer
+{
+  timer()
+    : m_frequency(0)
+    , m_start(0)
+  {
+  }
+
+  bool start()
+  {
+    LARGE_INTEGER tmp;
+    if (!QueryPerformanceFrequency(&tmp)) {
+      // XXX might want to raise
+      return false;
+    }
+    m_frequency = tmp.QuadPart / 1000.0;
+
+    QueryPerformanceCounter(&tmp);
+    m_start = tmp.QuadPart;
+
+    return true;
+  }
+
+  int64_t get_elapsed()
+  {
+    LARGE_INTEGER tmp;
+    QueryPerformanceCounter(&tmp);
+
+    return int64_t((tmp.QuadPart - m_start) / m_frequency);
+  }
+
+  double  m_frequency;
+  int64_t m_start;
+};
+
 TWINE_ANONS_END
 
 
@@ -90,8 +129,23 @@ now()
 bool
 sleep(nanoseconds const & nsec)
 {
-  // FIXME
-  return false;
+  timer t;
+  if (!t.start()) {
+    return false;
+  }
+
+  auto msec = nsec.template as<milliseconds>();
+
+  // Don't sleep for the whole time; leave 5 msec. We'll spin over those for
+  // accuracy.
+  auto sleep = msec - 5;
+  if (sleep > 0) {
+    ::Sleep(int(sleep));
+  }
+
+  while (t.get_elapsed() < msec) {};
+
+  return true;
 }
 
 
