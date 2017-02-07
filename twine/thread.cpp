@@ -48,7 +48,7 @@ thread::thread()
   : m_mutex()
   , m_info(nullptr)
   , m_is_attached(false)
-  , m_handle()
+  , m_handle(INVALID_HANDLE_VALUE)
 {
 }
 
@@ -59,7 +59,7 @@ thread::thread(thread::function func, void * baton,
   : m_mutex()
   , m_info(nullptr)
   , m_is_attached(false)
-  , m_handle()
+  , m_handle(INVALID_HANDLE_VALUE)
 {
   scoped_lock<recursive_mutex> lock(m_mutex);
 

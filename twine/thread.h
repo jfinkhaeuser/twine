@@ -35,6 +35,10 @@
 
 #include <meta/nullptr.h>
 
+#if defined(TWINE_POSIX)
+#  define INVALID_HANDLE_VALUE pthread_t()
+#endif // TWINE_UNIX
+
 namespace twine {
 
 /***************************************************************************
