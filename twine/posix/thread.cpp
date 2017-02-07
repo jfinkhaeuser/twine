@@ -22,8 +22,6 @@
 #include <twine/thread.h>
 #undef TWINE_THREAD_DETAILS
 
-#include <twine/detail/thread_info.h>
-
 #if defined(TWINE_HAVE_GETTID)
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -43,40 +41,12 @@
 #include <pthread_np.h>
 #endif
 
+#include <twine/detail/thread_info.h>
+#include <twine/detail/thread_wrapper.tcc>
+
+
 namespace twine {
 namespace detail {
-
-TWINE_ANONS_START
-
-// Thread wrapper function - takes ownership of the passed info structure
-static void * thread_wrapper(void * arg)
-{
-  thread::thread_info * info = static_cast<thread::thread_info *>(arg);
-
-  // Get thead id.
-  info->get_thread_id();
-
-  // Run thread function safely - terminate the thread on any exception
-  try {
-    info->m_func(info->m_baton);
-  } catch (...) {
-    delete info;
-    std::terminate();
-  }
-
-  // Detach the current thread of execution from the thread object held in the
-  // info structure.
-  info->detach_from_thread_object();
-
-  // Cleanup
-  delete info;
-
-  return nullptr;
-}
-
-TWINE_ANONS_END
-
-
 
 
 // Get a numeric thread ID.  We'll try to return an OS-specific handle.
@@ -98,6 +68,7 @@ void
 thread_join(pthread_t & handle)
 {
   ::pthread_join(handle, nullptr);
+  handle = INVALID_HANDLE_VALUE;
 }
 
 
