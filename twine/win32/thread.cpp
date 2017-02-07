@@ -22,10 +22,57 @@
 #include <twine/thread.h>
 #undef TWINE_THREAD_DETAILS
 
+#include <process.h>
+#include <errno.h>
+
 #include <twine/detail/thread_info.h>
+#include <twine/detail/thread_wrapper.tcc>
 
 namespace twine {
+namespace detail {
+
+thread::id
+get_thread_id()
+{
+  return ::GetCurrentThreadId();
+}
+
+
+void
+thread_join(HANDLE & handle)
+{
+  if (INVALID_HANDLE_VALUE == handle) {
+    return;
+  }
+
+  if (WAIT_OBJECT_0 == ::WaitForSingleObject(handle, INFINITE)) {
+    ::CloseHandle(handle);
+    handle = INVALID_HANDLE_VALUE;
+  }
+}
+
+
+void
+thread_detach(HANDLE & handle)
+{
+  ::CloseHandle(handle);
+  handle = INVALID_HANDLE_VALUE;
+}
+
+
+int
+thread_create(HANDLE & handle, thread::thread_info * info)
+{
+  handle = reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0,
+        detail:: TWINE_ANONS(thread_wrapper), info, 0, nullptr));
+  if (0 != handle) {
+    return 0;
+  }
+
+  return errno;
+}
 
 
 
+} // namespace detail
 } // namespace twine
