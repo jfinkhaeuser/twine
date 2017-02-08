@@ -212,6 +212,12 @@ thread::hardware_concurrency()
 #elif defined(TWINE_HAVE__SC_NPROC_ONLN)
   return ::sysconf(_SC_NPROC_ONLN);
 
+#elif defined(TWINE_HAVE_GETSYSTEMINFO)
+  // Windows
+  SYSTEM_INFO sysinfo;
+  GetSystemInfo(&sysinfo);
+  return sysinfo.dwNumberOfProcessors;
+
 #endif
   return 0;
 }
@@ -234,6 +240,11 @@ void yield()
 {
 #if defined(TWINE_HAVE_SCHED_YIELD)
   sched_yield();
+
+#elif defined(TWINE_HAVE_SWITCHTOTHREAD)
+  // Windows
+  SwitchToThread();
+
 #else
   throw std::runtime_error("yield() not implemented on this platform.");
 #endif
