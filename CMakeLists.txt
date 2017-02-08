@@ -80,6 +80,8 @@ check_function_exists(nanosleep TWINE_HAVE_NANOSLEEP)
 check_function_exists(sched_yield TWINE_HAVE_SCHED_YIELD)
 check_function_exists(clock_gettime TWINE_HAVE_CLOCK_GETTIME)
 check_function_exists(gettimeofday TWINE_HAVE_GETTIMEOFDAY)
+check_function_exists(GetSystemInfo TWINE_HAVE_GETSYSTEMINFO)
+check_function_exists(SwitchToThread TWINE_HAVE_SWITCHTOTHREAD)
 
 SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
@@ -182,7 +184,8 @@ set (CMAKE_CXX_FLAGS_RELEASE  "${META_CFLAGS} ${CPPUNIT_CFLAGS} ${CMAKE_CXX_FLAG
 set(LIB_SOURCES
     twine/version.cpp
     twine/thread.cpp
-    twine/tasklet.cpp)
+    twine/tasklet.cpp
+)
 
 if (UNIX)
   set(LIB_SOURCES ${LIB_SOURCES}
@@ -198,8 +201,8 @@ endif (WIN32)
 
 add_library(twine_static STATIC ${LIB_SOURCES})
 add_library(twine_shared SHARED ${LIB_SOURCES})
-set_target_properties(twine_static twine_shared PROPERTIES OUTPUT_NAME twine)
-
+set_target_properties(twine_static twine_shared PROPERTIES
+    OUTPUT_NAME twine)
 set_target_properties(twine_shared PROPERTIES
     SOVERSION "${TWINE_PACKAGE_MAJOR}"
     VERSION "${TWINE_PACKAGE_MAJOR}.${TWINE_PACKAGE_MINOR}.0"
@@ -288,6 +291,9 @@ if (CPPUNIT_FOUND)
     setup_target_for_coverage(coverage ${PROJECT_TEST_NAME} coverage)
     target_link_libraries(${PROJECT_TEST_NAME} gcov)
   endif()
+
+  # May not work for older CMake versions
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT testsuite)
 endif (CPPUNIT_FOUND)
 
 
