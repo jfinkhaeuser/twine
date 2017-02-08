@@ -115,10 +115,12 @@ private:
       CPPUNIT_ASSERT_EQUAL_MESSAGE(typeid(testT).name(), tc::hours(HOUR), n.template convert<tc::hours>());
 
       // The timespec value is always the same
+#if defined(TWINE_HAVE_TIME_H)
       ::timespec t;
       n.as(t);
       CPPUNIT_ASSERT_EQUAL(time_t(3600), t.tv_sec);
       CPPUNIT_ASSERT_EQUAL(long(0), t.tv_nsec);
+#endif
     }
 
     void testConversion()
