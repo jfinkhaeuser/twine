@@ -26,7 +26,7 @@
 #include <twine/chrono.h>
 #include <twine/scoped_lock.h>
 
-#define THREAD_TEST_SHORT_DELAY twine::chrono::milliseconds(1)
+#define THREAD_TEST_SHORT_DELAY twine::chrono::milliseconds(20)
 #define THREAD_TEST_LONG_DELAY  twine::chrono::milliseconds(100)
 
 namespace {
