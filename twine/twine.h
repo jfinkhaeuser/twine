@@ -34,8 +34,10 @@
 #include <unistd.h>
 #endif
 
-// Which platform are we on?
-#if !defined(TWINE_PLATFORM_DEFINED_)
+/**
+ * Which platform are we on?
+ **/
+#if !defined(TWINE_PLATFORM_DEFINED)
   #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
     #define TWINE_WIN32
   #else
@@ -44,7 +46,9 @@
   #define TWINE_PLATFORM_DEFINED
 #endif
 
-// Decide what to include
+/**
+ * Decide what to include globally
+ **/
 #if defined(TWINE_WIN32)
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
