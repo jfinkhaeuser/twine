@@ -46,6 +46,7 @@ struct time_reference
 
     // Relative to EPOCH
     m_reference -= ((uint64_t) 116444736000000000ULL);
+    m_reference *= 100; // FILETIME is in 100ns increments.
 
     // Grab starting time.
     QueryPerformanceCounter(&m_starting_time);
