@@ -25,8 +25,8 @@
 #include <twine/mutex.h>
 #include <twine/thread.h>
 
-#define COND_TEST_SHORT_DELAY twine::chrono::milliseconds(1)
-#define COND_TEST_LONG_DELAY  twine::chrono::milliseconds(100)
+#define COND_TEST_SHORT_DELAY twine::chrono::milliseconds(20)
+#define COND_TEST_LONG_DELAY  twine::chrono::milliseconds(250)
 
 namespace {
 
