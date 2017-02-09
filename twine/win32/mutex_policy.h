@@ -27,6 +27,8 @@
 
 #include <twine/twine.h>
 
+#include <twine/chrono.h>
+
 
 namespace twine {
 namespace detail {
@@ -36,10 +38,35 @@ namespace detail {
  **/
 struct nonrecursive_policy
 {
-  static inline bool may_not_enter(volatile int const & lock_count)
+  inline nonrecursive_policy()
+    : m_locked(false)
   {
-    return (lock_count > 1);
   }
+
+  inline ~nonrecursive_policy()
+  {
+  }
+
+  inline void deadlock_multiple_threads()
+  {
+    while (m_locked) {
+      // FIXME define
+      ::twine::chrono::sleep(::twine::chrono::milliseconds(20));
+    }
+    m_locked = true;
+  }
+
+  inline bool check_deadlock()
+  {
+    return m_locked;
+  }
+
+  inline void lift_deadlock()
+  {
+    m_locked = false;
+  }
+
+  volatile bool m_locked;
 };
 
 
@@ -49,10 +76,21 @@ struct nonrecursive_policy
  **/
 struct recursive_policy
 {
-  static inline bool may_not_enter(volatile int const & lock_count)
+  inline recursive_policy()
   {
-    // We may always enter a critical section.
+  }
+
+  inline void deadlock_multiple_threads()
+  {
+  }
+
+  inline bool check_deadlock()
+  {
     return false;
+  }
+
+  inline void lift_deadlock()
+  {
   }
 };
 

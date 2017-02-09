@@ -35,7 +35,7 @@ template <
 >
 mutex_base<recursion_policyT>::mutex_base()
   : m_handle()
-  , m_lock_count(0)
+  , recursion_policyT()
 {
   InitializeCriticalSection(&m_handle);
 }
@@ -58,23 +58,8 @@ template <
 void
 mutex_base<recursion_policyT>::lock()
 {
-  while (true) {
-    // First, try to enter the critical section. For recursive and non-recursive
-    // mutexes, this succeeds if the current thread owns the handle.
-    EnterCriticalSection(&m_handle);
-    ++m_lock_count;
-
-    // Perhaps the recursion policy disallows us entering recursively. In that
-    // case, we leave again immediately. We busy-loop trying to stay in this
-    // critical section.
-    if (recursion_policyT::may_not_enter(m_lock_count)) {
-      --m_lock_count;
-      LeaveCriticalSection(&m_handle);
-      continue;
-    }
-
-    break;
-  }
+  EnterCriticalSection(&m_handle);
+  recursion_policyT::deadlock_multiple_threads();
 }
 
 
@@ -91,13 +76,8 @@ mutex_base<recursion_policyT>::try_lock()
   if (!ret) {
     return false;
   }
-  ++m_lock_count;
 
-  // Perhaps the recursion policy disallows us entering recursively. In that
-  // case, we leave again immediately. We busy-loop trying to stay in this
-  // critical section.
-  if (recursion_policyT::may_not_enter(m_lock_count)) {
-    --m_lock_count;
+  if (recursion_policyT::check_deadlock()) {
     LeaveCriticalSection(&m_handle);
     return false;
   }
@@ -113,10 +93,8 @@ template <
 void
 mutex_base<recursion_policyT>::unlock()
 {
-  if (m_lock_count > 0) {
-    --m_lock_count;
-    LeaveCriticalSection(&m_handle);
-  }
+  recursion_policyT::lift_deadlock();
+  LeaveCriticalSection(&m_handle);
 }
 
 } // namespace twine

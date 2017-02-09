@@ -37,7 +37,7 @@ namespace twine {
 namespace detail {
 
 template <typename T, typename U>
-struct unwrap_handle;
+struct unwrap_internals;
 
 } // namespace detail
 
@@ -56,8 +56,11 @@ template <
 >
 class mutex_base
   : public twine::noncopyable
+  , private recursion_policyT
 {
 public:
+  typedef typename recursion_policyT recursion_policy_t;
+
   // Constructor/destructor
   mutex_base();
   ~mutex_base();
@@ -71,11 +74,10 @@ public:
 
 private:
   template <typename T, typename U>
-  friend struct detail::unwrap_handle;
+  friend struct detail::unwrap_internals;
 
 #if defined(TWINE_WIN32)
   CRITICAL_SECTION  m_handle;
-  volatile int      m_lock_count;
 #elif defined(TWINE_POSIX)
   pthread_mutex_t   m_handle;
 #endif
