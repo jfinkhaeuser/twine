@@ -39,7 +39,7 @@ namespace twine {
 namespace detail {
 
 template <typename T, typename U>
-struct unwrap_handle;
+struct unwrap_internals;
 
 } // namespace detail
 
@@ -92,7 +92,7 @@ public:
 
 private:
   template <typename T, typename U>
-  friend struct detail::unwrap_handle;
+  friend struct detail::unwrap_internals;
 
   mutexT & m_mutex;
 };
