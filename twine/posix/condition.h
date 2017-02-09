@@ -37,7 +37,7 @@
 
 #include <meta/nullptr.h>
 
-#include <twine/detail/unwrap_handle.h>
+#include <twine/detail/unwrap_internals.h>
 
 namespace twine {
 
@@ -64,7 +64,7 @@ void
 condition::wait(lockableT & lockable)
 {
   pthread_cond_wait(&m_handle,
-      &detail::unwrap_handle<pthread_mutex_t, lockableT>::get(lockable));
+      &detail::unwrap_internals<pthread_mutex_t, lockableT>::get_mutex_handle(lockable));
 }
 
 
@@ -80,7 +80,7 @@ condition::timed_wait(lockableT & lockable, durationT const & duration)
   delay.as(wakeup);
 
   int ret = pthread_cond_timedwait(&m_handle,
-      &detail::unwrap_handle<pthread_mutex_t, lockableT>::get(lockable),
+      &detail::unwrap_internals<pthread_mutex_t, lockableT>::get_mutex_handle(lockable),
       &wakeup);
   return !(ret == ETIMEDOUT);
 }
