@@ -36,13 +36,6 @@ Features
 - Minimal overhead - most functions generate compact inline code.
 
 
-TODO
-----
-
-- Windows port. Some of the code is there, but the entire project needs to be
-  built & tested on Windows.
-
-
 Requirements
 ------------
 
