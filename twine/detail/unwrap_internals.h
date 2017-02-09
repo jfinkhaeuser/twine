@@ -18,8 +18,8 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE.
  **/
-#ifndef TWINE_DETAIL_UNWRAP_HANDLE_H
-#define TWINE_DETAIL_UNWRAP_HANDLE_H
+#ifndef TWINE_DETAIL_UNWRAP_INTERNALS_H
+#define TWINE_DETAIL_UNWRAP_INTERNALS_H
 
 #ifndef __cplusplus
 #error You are trying to include a C++ only header file
@@ -38,42 +38,42 @@ namespace detail {
  * or lock object.
  **/
 template <typename handleT, typename lockableT>
-struct unwrap_handle
+struct unwrap_internals
 {
-  inline static handleT & get(lockableT & lockable);
+  inline static handleT & get_mutex_handle(lockableT &);
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, mutex>
+struct unwrap_internals<handleT, mutex>
 {
-  inline static handleT & get(mutex & mutex)
+  inline static handleT & get_mutex_handle(mutex & mutex)
   {
     return mutex.m_handle;
   }
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, recursive_mutex>
+struct unwrap_internals<handleT, recursive_mutex>
 {
-  inline static handleT & get(recursive_mutex & mutex)
+  inline static handleT & get_mutex_handle(recursive_mutex & mutex)
   {
     return mutex.m_handle;
   }
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, scoped_lock<mutex> >
+struct unwrap_internals<handleT, scoped_lock<mutex> >
 {
-  inline static handleT & get(scoped_lock<mutex> & lock)
+  inline static handleT & get_mutex_handle(scoped_lock<mutex> & lock)
   {
     return lock.m_mutex.m_handle;
   }
 };
 
 template <typename handleT>
-struct unwrap_handle<handleT, scoped_lock<recursive_mutex> >
+struct unwrap_internals<handleT, scoped_lock<recursive_mutex> >
 {
-  inline static handleT & get(scoped_lock<recursive_mutex> & lock)
+  inline static handleT & get_mutex_handle(scoped_lock<recursive_mutex> & lock)
   {
     return lock.m_mutex.m_handle;
   }
