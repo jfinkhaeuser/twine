@@ -25,7 +25,7 @@
 #error You are trying to include a C++ only header file
 #endif
 
-#include <twine/twine.h>
+#include <twine/condition.h>
 
 #if defined(TWINE_HAVE_TIME_H)
 #  include <time.h>
