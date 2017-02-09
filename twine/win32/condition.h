@@ -25,12 +25,110 @@
 #error You are trying to include a C++ only header file
 #endif
 
-#include <twine/twine.h>
+#include <twine/condition.h>
 
+#include <twine/detail/unwrap_internals.h>
 
 namespace twine {
 
-  // TODO
+#define TWINE_CE_ONE 0
+#define TWINE_CE_ALL 1
+
+condition::condition()
+  : m_waiters_lock()
+  , m_waiters(0)
+{
+  m_events[TWINE_CE_ONE] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  m_events[TWINE_CE_ALL] = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+  InitializeCriticalSection(&m_waiters_lock);
+}
+
+
+
+condition::~condition()
+{
+  CloseHandle(m_events[TWINE_CE_ONE]);
+  CloseHandle(m_events[TWINE_CE_ALL]);
+  DeleteCriticalSection(&m_waiters_lock);
+}
+
+
+
+template <typename lockableT>
+void
+condition::wait(lockableT & lockable)
+{
+  condition::timed_wait(lockable, twine::chrono::milliseconds(INFINITE));
+}
+
+
+
+template <typename lockableT, typename durationT>
+bool
+condition::timed_wait(lockableT & lockable, durationT const & duration)
+{
+  // Increment waiters
+  EnterCriticalSection(&m_waiters_lock);
+  ++m_waiters;
+  LeaveCriticalSection(&m_waiters_lock);
+
+  // Release the lockable and wait for the condition.
+  lockable.unlock();
+
+  DWORD delay = static_cast<DWORD>(duration.as<twine::chrono::milliseconds>());
+  int result = WaitForMultipleObjects(2, m_events, FALSE, delay);
+  if (WAIT_TIMEOUT == result) {
+    lockable.lock();
+    return false;
+  }
+
+  EnterCriticalSection(&m_waiters_lock);
+  --m_waiters;
+
+  bool last_waiter = (WAIT_OBJECT_0 + TWINE_CE_ALL == result
+      && 0 == m_waiters);
+  LeaveCriticalSection(&m_waiters_lock);
+
+  // If we are the last waiter, stop waiting.
+  if (last_waiter) {
+    ResetEvent(m_events[TWINE_CE_ALL]);
+  }
+
+  lockable.lock();
+  return true;
+}
+
+
+void
+condition::notify_internal(int event)
+{
+  EnterCriticalSection(&m_waiters_lock);
+  bool have_waiters = (m_waiters > 0);
+  LeaveCriticalSection(&m_waiters_lock);
+
+  if (have_waiters) {
+    SetEvent(m_events[event]);
+  }
+}
+
+
+
+void
+condition::notify_one()
+{
+  notify_internal(TWINE_CE_ONE);
+}
+
+
+
+void
+condition::notify_all()
+{
+  notify_internal(TWINE_CE_ALL);
+}
+
+#undef TWINE_CE_ONE
+#undef TWINE_CE_ALL
 
 }
 

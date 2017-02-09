@@ -74,9 +74,13 @@ public:
 
 private:
 #if defined(TWINE_WIN32)
-  // TODO
+  inline void notify_internal(int event);
+
+  CRITICAL_SECTION      m_waiters_lock;
+  volatile unsigned int m_waiters;
+  HANDLE                m_events[2];
 #elif defined(TWINE_POSIX)
-  pthread_cond_t  m_handle;
+  pthread_cond_t        m_handle;
 #endif
 };
 
