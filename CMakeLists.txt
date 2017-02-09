@@ -231,7 +231,7 @@ install(FILES
     DESTINATION include/twine)
 
 install(FILES
-    twine/detail/unwrap_handle.h
+    twine/detail/unwrap_internals.h
     DESTINATION include/twine/detail)
 
 install(FILES
