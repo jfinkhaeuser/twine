@@ -59,7 +59,7 @@ class mutex_base
   , private recursion_policyT
 {
 public:
-  typedef typename recursion_policyT recursion_policy_t;
+  typedef recursion_policyT recursion_policy_t;
 
   // Constructor/destructor
   mutex_base();
