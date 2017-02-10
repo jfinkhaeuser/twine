@@ -94,7 +94,19 @@ condition::timed_wait(lockableT & lockable, durationT const & duration)
     ResetEvent(m_events[TWINE_CE_ALL]);
   }
 
+  // Try to avoid resource starvation. If what happens after the condition
+  // variable was signalled is fast, and in a loop, then the caller may just
+  // enter the timed_wait() again before any other thread is scheduled.
+  //
+  // That's fine in theory, but in practice for the TWINE_CE_ALL event, it may
+  // mean that m_waiters never goes to zero (goes to zero late), because it's
+  // always the same thread incrementing and decrementing the counter.
+  if (WAIT_OBJECT_0 + TWINE_CE_ALL == result) {
+    this_thread::yield();
+  }
+
   lockable.lock();
+
   return true;
 }
 
