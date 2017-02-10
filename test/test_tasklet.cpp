@@ -129,7 +129,7 @@ private:
 
       // The time difference must be very close to the sleep time of
       // 500msec. We'll want no less than 0.1 msec difference.
-      CPPUNIT_ASSERT(std::labs((t2.raw() - t1.raw()) - 500000000) < 1000000);
+      CPPUNIT_ASSERT(std::labs(long((t2.raw() - t1.raw()) - 500000000) < 1000000));
     }
 
     // Count how often the thread got woken. Since it sleeps indefinitely,
