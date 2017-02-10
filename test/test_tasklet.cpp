@@ -228,12 +228,18 @@ private:
     twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
 
     // Both get woken
-    CPPUNIT_ASSERT_EQUAL(int(2), count);
+    CPPUNIT_ASSERT(int(2) <= count);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "may fail under resource starvation.",
+        int(2), count);
 
     // One gets stopped by this
     t1.stop();
     twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
-    CPPUNIT_ASSERT_EQUAL(int(3), count);
+    CPPUNIT_ASSERT(int(3) <= count);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(
+        "may fail under resource starvation.",
+        int(3), count);
 
     // Now both should be stopped.
     t2.stop();
