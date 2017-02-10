@@ -280,7 +280,7 @@ template <
   typename reprT,
   typename ratioT
 >
-inline std::ostream &
+std::ostream &
 operator<<(std::ostream & os, duration<reprT, ratioT> const & d)
 {
   default_repr_t tmp = d.template as<twine::chrono::nanoseconds>();
