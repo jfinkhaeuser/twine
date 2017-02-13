@@ -3,6 +3,8 @@ twine
 
 Twine is a very small threading library for C++.
 
+[![Build Status](https://travis-ci.org/jfinkhaeuser/twine.svg?branch=master)](https://travis-ci.org/jfinkhaeuser/twine)
+
 It's similar in scope to [TinyThread++](http://tinythreadpp.bitsnbites.eu/), so
 let's blatantly steal from that project's description:
 
@@ -29,8 +31,11 @@ Features
 
 - Dual-licensed! Yes, that's a feature - it means you can use it in FLOSS for
   free, but can get a license for commercial software, too.
-- Portable - tested under Mac OS X, Linux, FreeBSD and should work under most
-  POSIX compatible systems.
+- Portable
+  - tested under Windows, Mac OS X, Linux, FreeBSD and should work under
+    most POSIX compatible systems.
+  - tested on x86_64, Arm and MIPS architectures
+  - tested with C++11 or later and C++98 compatible compilers.
 - Still relatively faithful to the C++11 standard. That doesn't mean the entire
   standard's thread-related scope is implemented.
 - Minimal overhead - most functions generate compact inline code.
@@ -86,3 +91,26 @@ Install using the `DESTDIR` environment variable, if necessary:
 ```bash
 $ make DESTDIR=/some/prefix install
 ```
+
+CI Building
+-----------
+
+The [build.sh](./build.sh) script uses `build-chroot` and `build-dependencies`
+to create a suitable build environment on CI, possibly on emulated hardware.
+
+Run e.g.
+
+```bash
+$ ./build.sh x86_64
+$ ./build.sh mips
+```
+
+License
+-------
+
+See [LICENSE](./LICENSE).
+
+Authors
+-------
+
+See [Authors](./AUTHORS.md).
