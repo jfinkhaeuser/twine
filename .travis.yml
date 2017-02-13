@@ -39,5 +39,15 @@ matrix:
       dist: xenial
       compiler: gcc
       env: ARCH=mips TWINE_USE_CXX11=ON
+  allow_failures:
+    # ARM and MIPS builds are emulated, might be too slow to succeed.
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      env: ARCH=armhf TWINE_USE_CXX11=ON
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      env: ARCH=mips TWINE_USE_CXX11=ON
 script:
   - ./build.sh "${ARCH}" "${TRAVIS_OS_NAME}" "${TRAVIS_BUILD_DIR}"
