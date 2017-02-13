@@ -127,13 +127,12 @@ struct duration
   >
   inline reprT as() const
   {
-    typedef ::meta::math::divide_ratios<ratioT, target_ratioT> META_ENUM_CLASS_NS(RATIO) final_ratio_t;
-    // std::cout << "converting from " << (reprT) typename ratioT META_ENUM_CLASS_NS(RATIO) ::DIVIDEND << "/" << (reprT) typename ratioT META_ENUM_CLASS_NS(RATIO) ::DIVISOR
-    //   << " to " << (reprT) target_ratioT META_ENUM_CLASS_NS(RATIO) ::DIVIDEND << "/" << (reprT) target_ratioT META_ENUM_CLASS_NS(RATIO) ::DIVISOR
-    //   << " -> " << (reprT) final_ratio_t::DIVIDEND << "/" << (reprT) final_ratio_t::DIVISOR
+    typedef ::meta::math::divide_ratios<ratioT, target_ratioT> final_ratio_t;
+    // std::cout << "converting from " << ratioT::DIVIDEND << "/" << ratioT::DIVISOR
+    //   << " to " << target_ratioT::DIVIDEND << "/" << target_ratioT::DIVISOR
+    //   << " -> " << final_ratio_t::DIVIDEND << "/" << final_ratio_t::DIVISOR
     //   << std::endl;
-    return (m_repr * static_cast<reprT>(final_ratio_t::DIVIDEND))
-      / static_cast<reprT>(final_ratio_t::DIVISOR);
+    return (m_repr * final_ratio_t::DIVIDEND) / final_ratio_t::DIVISOR;
   }
 
   template <
@@ -151,16 +150,16 @@ struct duration
   inline void as(::timeval & val) const
   {
     typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
-    val.tv_sec = time_t((m_repr * static_cast<default_repr_t>(second_ratio_t META_ENUM_CLASS_NS(RATIO) ::DIVIDEND))
-        / static_cast<default_repr_t>(second_ratio_t META_ENUM_CLASS_NS(RATIO) ::DIVISOR));
+    val.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND)
+        / second_ratio_t::DIVISOR);
 
     typedef typename ::meta::math::invert<second_ratio_t>::type inverse_t;
-    default_repr_t remainder = m_repr - ((default_repr_t(val.tv_sec) * static_cast<default_repr_t>(inverse_t META_ENUM_CLASS_NS(RATIO) ::DIVIDEND))
-        / static_cast<default_repr_t>(inverse_t META_ENUM_CLASS_NS(RATIO) ::DIVISOR));
+    default_repr_t remainder = m_repr - ((default_repr_t(val.tv_sec) * inverse_t::DIVIDEND)
+        / inverse_t::DIVISOR);
 
-    typedef ::meta::math::divide_ratios<ratioT, microsecond_ratio> META_ENUM_CLASS_NS(RATIO) microsecond_ratio_t;
-    val.tv_usec = long((remainder * static_cast<default_repr_t>(microsecond_ratio_t::DIVIDEND))
-        / static_cast<default_repr_t>(microsecond_ratio_t::DIVISOR));
+    typedef ::meta::math::divide_ratios<ratioT, microsecond_ratio> microsecond_ratio_t;
+    val.tv_usec = long((remainder * microsecond_ratio_t::DIVIDEND)
+        / microsecond_ratio_t::DIVISOR);
   }
 #endif
 
@@ -168,16 +167,16 @@ struct duration
   inline void as(::timespec & spec) const
   {
     typedef ::meta::math::divide_ratios<ratioT, second_ratio> second_ratio_t;
-    spec.tv_sec = time_t((m_repr * static_cast<default_repr_t>(second_ratio_t META_ENUM_CLASS_NS(RATIO) ::DIVIDEND))
-        / static_cast<default_repr_t>(second_ratio_t META_ENUM_CLASS_NS(RATIO) ::DIVISOR));
+    spec.tv_sec = time_t((m_repr * second_ratio_t::DIVIDEND)
+        / second_ratio_t::DIVISOR);
 
     typedef typename ::meta::math::invert<second_ratio_t>::type inverse_t;
-    default_repr_t remainder = m_repr - ((default_repr_t(spec.tv_sec) * static_cast<default_repr_t>(inverse_t META_ENUM_CLASS_NS(RATIO) ::DIVIDEND))
-        / static_cast<default_repr_t>(inverse_t META_ENUM_CLASS_NS(RATIO) ::DIVISOR));
+    default_repr_t remainder = m_repr - ((default_repr_t(spec.tv_sec) * inverse_t::DIVIDEND)
+        / inverse_t::DIVISOR);
 
-    typedef ::meta::math::divide_ratios<ratioT, nanosecond_ratio> META_ENUM_CLASS_NS(RATIO) nanosecond_ratio_t;
-    spec.tv_nsec = long((remainder * static_cast<default_repr_t>(nanosecond_ratio_t::DIVIDEND))
-          / static_cast<default_repr_t>(nanosecond_ratio_t::DIVISOR));
+    typedef ::meta::math::divide_ratios<ratioT, nanosecond_ratio> nanosecond_ratio_t;
+    spec.tv_nsec = long((remainder * nanosecond_ratio_t::DIVIDEND)
+          / nanosecond_ratio_t::DIVISOR);
   }
 #endif
 
