@@ -50,6 +50,20 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set (CMAKE_CXX_FLAGS "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD}")
   set (CMAKE_CXX_FLAGS_DEBUG "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O0 -ggdb")
   set (CMAKE_CXX_FLAGS_RELEASE "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O3 -ggdb")
+
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  message("Selecting compiler flags for MSVC")
+
+  set (MSVC_CXX_FLAGS "/analyze /GR /sdl /W4"
+      CACHE STRING "Default flags for MSVC")
+  if (TWINE_USE_CXX11)
+    set (MSVC_CXX_FLAGS_STD "/std:c++latest")
+  else (TWINE_USE_CXX11)
+    set (MSVC_CXX_FLAGS_STD "/std:c++98")
+  endif (TWINE_USE_CXX11)
+  set (CMAKE_CXX_FLAGS "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD}")
+  set (CMAKE_CXX_FLAGS_DEBUG "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} ")
+  set (CMAKE_CXX_FLAGS_RELEASE "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} /GL /Ox")
 endif ()
 
 ##############################################################################
@@ -135,7 +149,7 @@ int main(int, char**)
 ##############################################################################
 # Dependencies
 find_package(Threads)
-find_package(meta 1.0)
+find_package(meta 1.1)
 find_package(cppunit 1.12.1)
 
 ##############################################################################
@@ -267,11 +281,21 @@ if (CPPUNIT_FOUND)
   add_executable(testsuite
       ${TEST_SOURCES}
       test/testsuite.cpp)
+
+  if (CPPUNIT_LIBRARY_DEBUG)
+    target_link_libraries(testsuite
+        twine_static
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${DEP_LIBRARIES}
+        debug
+        ${CPPUNIT_LIBRARY_DEBUG})
+  endif ()
   target_link_libraries(testsuite
       twine_static
       ${CMAKE_THREAD_LIBS_INIT}
       ${DEP_LIBRARIES}
-      ${CPPUNIT_LIBRARIES})
+      optimized
+      ${CPPUNIT_LIBRARY_RELEASE})
 
   # Since some time after 2.8.9
   if ("${CMAKE_VERSION}" VERSION_GREATER "2.8.10")
@@ -295,7 +319,6 @@ if (CPPUNIT_FOUND)
   # May not work for older CMake versions
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT testsuite)
 endif (CPPUNIT_FOUND)
-
 
 ##############################################################################
 # CPack Section
