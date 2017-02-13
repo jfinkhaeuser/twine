@@ -22,6 +22,19 @@
 #include <twine/thread.h>
 #undef TWINE_THREAD_DETAILS
 
+#if defined(TWINE_HAVE___SC_NPROCESSORS_ONLN) || defined(TWINE_HAVE___SC_NPROC_ONLN)
+#include <unistd.h>
+#endif
+
+#if defined(TWINE_HAVE_HW_NCPU)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
+
+#if defined(TWINE_HAVE_SCHED_YIELD)
+#include <sched.h>
+#endif
+
 #include <exception>
 #include <stdexcept>
 

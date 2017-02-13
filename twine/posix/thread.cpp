@@ -28,15 +28,6 @@
 #include <sys/types.h>
 #endif
 
-#if defined(TWINE_HAVE_HW_NCPU)
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#endif
-
-#if defined(TWINE_HAVE_SCHED_YIELD)
-#include <sched.h>
-#endif
-
 #if defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
 #include <pthread_np.h>
 #endif
