@@ -44,7 +44,11 @@ namespace detail {
 thread::id
 get_thread_id()
 {
-#if defined(TWINE_HAVE_GETTID)
+#if defined(TWINE_HAVE_PTHREAD_THREADID_NP)
+  uint64_t tid;
+  ::pthread_threadid_np(nullptr, &tid);
+  return tid;
+#elif defined(TWINE_HAVE_GETTID)
   return ::syscall(SYS_gettid);
 #elif defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
   return ::pthread_getthreadid_np();
