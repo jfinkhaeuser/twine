@@ -74,6 +74,7 @@ check_include_file_cxx(sys/types.h TWINE_HAVE_SYS_TYPES_H)
 check_include_file_cxx(sys/select.h TWINE_HAVE_SYS_SELECT_H)
 check_include_file_cxx(time.h TWINE_HAVE_TIME_H)
 check_include_file_cxx(unistd.h TWINE_HAVE_UNISTD_H)
+check_include_file_cxx(sys/thr.h TWINE_HAVE_SYS_THR_H)
 
 
 ##############################################################################
@@ -100,6 +101,7 @@ check_function_exists(SwitchToThread TWINE_HAVE_SWITCHTOTHREAD)
 SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
 check_function_exists(pthread_threadid_np TWINE_HAVE_PTHREAD_THREADID_NP)
+check_function_exists(thr_self TWINE_HAVE_THR_SELF)
 
 
 ##############################################################################

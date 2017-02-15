@@ -32,6 +32,10 @@
 #include <pthread_np.h>
 #endif
 
+#if defined(TWINE_HAVE_SYS_THR_H)
+#include <sys/thr.h>
+#endif
+
 #include <twine/detail/thread_info.h>
 #include <twine/detail/thread_wrapper.tcc>
 
@@ -52,6 +56,10 @@ get_thread_id()
   return ::syscall(SYS_gettid);
 #elif defined(TWINE_HAVE_PTHREAD_GETTHREADID_NP)
   return ::pthread_getthreadid_np();
+#elif defined(TWINE_HAVE_THR_SELF)
+  long tid;
+  ::thr_self(&tid);
+  return tid;
 #else
 #error Cannot compile on this system; no known way to determine thread ID.
   return thread::bad_thread_id;
