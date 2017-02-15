@@ -21,6 +21,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "compare_times.h"
+
 #include <cstdlib>
 
 #include <twine/tasklet.h>
@@ -128,8 +130,8 @@ private:
       twine::chrono::nanoseconds t2 = twine::chrono::now();
 
       // The time difference must be very close to the sleep time of
-      // 500msec. We'll want no less than 0.1 msec difference.
-      CPPUNIT_ASSERT(std::labs(long((t2.raw() - t1.raw()) - 500000000) < 1000000));
+      // 500msec. 
+     compare_times(t1, t2, twine::chrono::milliseconds(500));
     }
 
     // Count how often the thread got woken. Since it sleeps indefinitely,

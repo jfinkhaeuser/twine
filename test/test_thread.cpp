@@ -21,6 +21,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "compare_times.h"
+
 #include <twine/thread.h>
 
 #include <twine/chrono.h>
@@ -109,7 +111,7 @@ private:
       tc::nanoseconds before = tc::now();
       twine::this_thread::sleep_for(THREAD_TEST_LONG_DELAY);
       tc::nanoseconds after = tc::now();
-      CPPUNIT_ASSERT(after > before);
+      compare_times(before, after, THREAD_TEST_LONG_DELAY);
     }
 
 

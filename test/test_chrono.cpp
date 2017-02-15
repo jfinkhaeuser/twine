@@ -23,6 +23,8 @@
 
 #include <twine/chrono.h>
 
+#include "compare_times.h"
+
 #include <cstdlib>
 
 #include <sstream>
@@ -252,9 +254,7 @@ private:
       tc::sleep(tc::milliseconds(25).convert<tc::nanoseconds>());
       tc::nanoseconds after = tc::now();
 
-      tc::default_repr_t diff = std::labs(long((after - now).raw() - 25000000));
-      CPPUNIT_ASSERT_MESSAGE("may fail if the system time changed", diff > 0);
-      CPPUNIT_ASSERT_MESSAGE("may fail if there is high CPU load", diff < 200000);
+      compare_times(now, after, tc::milliseconds(25));
     }
 
 
