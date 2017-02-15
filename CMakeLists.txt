@@ -5,8 +5,8 @@ project(twine)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 
-set (TWINE_PACKAGE_MAJOR 0)
-set (TWINE_PACKAGE_MINOR 1)
+set (TWINE_PACKAGE_MAJOR 1)
+set (TWINE_PACKAGE_MINOR 0)
 set (TWINE_PACKAGE_URL https://github.com/jfinkhaeuser/twine)
 
 ##############################################################################
