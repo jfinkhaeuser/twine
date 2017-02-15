@@ -45,6 +45,7 @@
 #cmakedefine TWINE_HAVE_GETSYSTEMINFO
 #cmakedefine TWINE_HAVE_SWITCHTOTHREAD
 #cmakedefine TWINE_HAVE_PTHREAD_GETTHREADID_NP
+#cmakedefine TWINE_HAVE_PTHREAD_THREADID_NP
 
 
 /*****************************************************************************

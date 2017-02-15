@@ -99,6 +99,7 @@ check_function_exists(SwitchToThread TWINE_HAVE_SWITCHTOTHREAD)
 
 SET(CMAKE_REQUIRED_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 check_function_exists(pthread_getthreadid_np TWINE_HAVE_PTHREAD_GETTHREADID_NP)
+check_function_exists(pthread_threadid_np TWINE_HAVE_PTHREAD_THREADID_NP)
 
 
 ##############################################################################
@@ -310,7 +311,7 @@ if (CPPUNIT_FOUND)
   set(PROJECT_TEST_NAME testsuite)
 
   # Code coverage
-  if(CMAKE_COMPILER_IS_GNUCXX)
+  if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_BUILD_TYPE STREQUAL "Coverage")
     include(CodeCoverage)
     setup_target_for_coverage(coverage ${PROJECT_TEST_NAME} coverage)
     target_link_libraries(${PROJECT_TEST_NAME} gcov)
