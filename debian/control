@@ -1,0 +1,41 @@
+Source: libtwine
+Section: devel
+Priority: optional
+Maintainer: Jens Finkhaeuser <jens@finkhaeuser.de>
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9), cmake (>= 2.8), cdbs (>= 0.4), libmeta-dev (>= 1.1)
+Homepage: https://github.com/jfinkhaeuser/twine
+Vcs-Git: https://github.com/jfinkhaeuser/twine.git
+
+Package: libtwine1
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libmeta1 (>= 1.1), ${shlibs:Depends}, ${misc:Depends}
+Description: Twine is a very small threading library for C++ (libraries)
+ This package contains libraries and appropriate pkg-config files.
+ For full information on the package, visit its github page at
+ https://github.com/jfinkhaeuser/twine
+
+Package: libtwine-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libtwine1 (= ${binary:Version}), libmeta-dev (>= 1.1), ${shlibs:Depends}, ${misc:Depends}
+Description: Twine is a very small threading library for C++ (development files)
+ This package contains headers only.
+ For full information on the package, visit its github page at
+ https://github.com/jfinkhaeuser/twine
+
+Package: libtwine1-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Multi-Arch: same
+Depends: libtwine1 (= ${binary:Version}), ${misc:Depends}
+Description: Twine is a very small threading library for C++ (debugging symbols)
+ This package contains debugging symbols only.
+ For full information on the package, visit its github page at
+ https://github.com/jfinkhaeuser/twine

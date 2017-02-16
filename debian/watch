@@ -1,0 +1,3 @@
+version=3
+opts=filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/twine-$1\.tar\.gz/ \
+     https://github.com/jfinkhaeuser/twine/tags .*/v?(\d\S+)\.tar\.gz
