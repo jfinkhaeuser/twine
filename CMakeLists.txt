@@ -33,9 +33,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   else (TWINE_USE_CXX11)
     set (CLANGXX_CXX_FLAGS_STD "-std=c++98")
   endif (TWINE_USE_CXX11)
-  set (CMAKE_CXX_FLAGS "${CLANGXX_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CLANGXX_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O0 -ggdb")
-  set (CMAKE_CXX_FLAGS_RELEASE "${CLANGXX_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O3 -ggdb")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD}")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O0 -ggdb")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O3 -ggdb")
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message("Selecting compiler flags for GNU c++")
@@ -47,9 +47,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   else (TWINE_USE_CXX11)
     set (GNUCXX_CXX_FLAGS_STD "-std=c++98")
   endif (TWINE_USE_CXX11)
-  set (CMAKE_CXX_FLAGS "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O0 -ggdb")
-  set (CMAKE_CXX_FLAGS_RELEASE "${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O3 -ggdb")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD}")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O0 -ggdb")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O3 -ggdb")
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message("Selecting compiler flags for MSVC")
@@ -61,10 +61,11 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   else (TWINE_USE_CXX11)
     set (MSVC_CXX_FLAGS_STD "/std:c++98")
   endif (TWINE_USE_CXX11)
-  set (CMAKE_CXX_FLAGS "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} ")
-  set (CMAKE_CXX_FLAGS_RELEASE "${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} /GL /Ox")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD}")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} ")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} /GL /Ox")
 endif ()
+
 
 ##############################################################################
 # Headers
@@ -179,6 +180,13 @@ configure_file(
     @ONLY
 )
 
+configure_file(
+    "${PROJECT_SOURCE_DIR}/package.sh.in"
+    "${PROJECT_BINARY_DIR}/package.sh"
+    @ONLY
+)
+
+
 
 ##############################################################################
 # Compiler flags #2
@@ -233,6 +241,8 @@ else()
     error("Unsupported platform.")
 endif()
 
+include(GNUInstallDirs)
+
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/twine/twine-config.h
     twine/twine.h
@@ -259,12 +269,12 @@ install(FILES
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/twine.pc
-    DESTINATION lib/pkgconfig)
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 install(TARGETS
     twine_static twine_shared
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT library)
 
 ##############################################################################
@@ -354,8 +364,17 @@ else(WIN32 AND NOT UNIX)
   # set(CPACK_STRIP_FILES "bin/MyExecutable")
   set(CPACK_SOURCE_STRIP_FILES "")
 
-  # Debian
-  # set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12)")
+  set(CPACK_SOURCE_IGNORE_FILES
+      "/CMakeFiles/"
+      "/tmp/"
+      "/build/"
+      "/_package/"
+      "/deps/"
+      "\\\\.git*"
+      "\\\\..*\\\\.sw."
+      "/\\\\.travis.yml"
+  )
+  set(CPACK_SOURCE_PACKAGE_FILE_NAME "twine-${TWINE_PACKAGE_MAJOR}.${TWINE_PACKAGE_MINOR}")
 endif(WIN32 AND NOT UNIX)
 
 # set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
