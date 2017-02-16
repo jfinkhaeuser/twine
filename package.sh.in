@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+set -x
+
+PACKAGE_DIR="$PWD/../_package"
+
+# Source tarball
+make package_source
+
+# Checksum tarball
+ORIG_TARBALL="twine-@TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@.tar.bz2"
+ORIG_TARBALL_SUM=$(tar -xOjf "$ORIG_TARBALL" | md5sum | cut -d' ' -f1)
+
+# Create package dir if it doesn't exist
+if [ ! -d "$PACKAGE_DIR" ] ; then
+  mkdir -p "$PACKAGE_DIR"
+fi
+
+# If a new tarball already exists in the package dir, then compare
+# checksums.
+NEW_TARBALL="libtwine_@TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@.orig.tar.bz2"
+if [ ! -f "$PACKAGE_DIR/$NEW_TARBALL" ] ; then
+  cp "$ORIG_TARBALL" "$PACKAGE_DIR/$NEW_TARBALL"
+else
+  NEW_TARBALL_SUM=$(tar -xOjf "$PACKAGE_DIR/$NEW_TARBALL" | md5sum | cut -d' ' -f1)
+  if [ "$ORIG_TARBALL_SUM" != "$NEW_TARBALL_SUM" ] ; then
+    cp "$ORIG_TARBALL" "$PACKAGE_DIR/$NEW_TARBALL"
+  fi
+fi
+
+# Go to package dir, unpack tarball.
+cd "$PACKAGE_DIR"
+rm -rf "twine-@TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@"
+tar vxfj "$NEW_TARBALL"
+cd twine-@TWINE_PACKAGE_MAJOR@.@TWINE_PACKAGE_MINOR@
+
+# Build packages
+debuild -us -uc -I -i
+rm -rf debian/tmp
+rm -rf inst
+debuild -S -sa
+
+# Double check
+for filename in "$PACKAGE_DIR"/*.deb ; do
+  dpkg-deb -I "$filename"
+  dpkg-deb -c "$filename"
+done
