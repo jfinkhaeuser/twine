@@ -49,6 +49,18 @@ Requirements
 - Twine uses a very limited subset of [meta](https://github.com/unwesen/meta).
   It's so limited it's barely necessary, but hey, `pkg-config` makes it easy!
 
+Installation (Ubuntu)
+---------------------
+
+Follow the instructions to add the [Ubuntu PPA](https://launchpad.net/~finkhaeuser-consulting/+archive/ubuntu/ppa)
+to your system. Then run (as root):
+
+```bash
+apt-get install libtwine-dev
+```
+
+This will install the binary package file as well as the development headers
+and all dependencies.
 
 Installation
 ------------
