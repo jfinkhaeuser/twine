@@ -34,8 +34,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set (CLANGXX_CXX_FLAGS_STD "-std=c++98")
   endif (TWINE_USE_CXX11)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O0 -ggdb")
-  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CLANGXX_CXX_FLAGS_STD} -O3 -ggdb")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -ggdb")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -ggdb")
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message("Selecting compiler flags for GNU c++")
@@ -48,8 +48,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set (GNUCXX_CXX_FLAGS_STD "-std=c++98")
   endif (TWINE_USE_CXX11)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O0 -ggdb")
-  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${GNUCXX_CXX_FLAGS_STD} -O3 -ggdb")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -ggdb")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -ggdb")
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message("Selecting compiler flags for MSVC")
@@ -62,8 +62,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set (MSVC_CXX_FLAGS_STD "/std:c++98")
   endif (TWINE_USE_CXX11)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD}")
-  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} ")
-  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS_STD} /GL /Ox")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
+  set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /GL /Ox")
 endif ()
 
 
@@ -365,11 +365,11 @@ else(WIN32 AND NOT UNIX)
   set(CPACK_SOURCE_STRIP_FILES "")
 
   set(CPACK_SOURCE_IGNORE_FILES
+      "/deps/"
       "/CMakeFiles/"
       "/tmp/"
       "/build/"
       "/_package/"
-      "/deps/"
       "\\\\.git*"
       "\\\\..*\\\\.sw."
       "/\\\\.travis.yml"
