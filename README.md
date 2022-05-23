@@ -3,7 +3,7 @@ twine
 
 Twine is a very small threading library for C++.
 
-[![Build Status](https://travis-ci.org/jfinkhaeuser/twine.svg?branch=master)](https://travis-ci.org/jfinkhaeuser/twine)
+[Now lives on Codeberg](https://codeberg.org/jfinkhaeuser/twine)
 
 It's similar in scope to [TinyThread++](http://tinythreadpp.bitsnbites.eu/), so
 let's blatantly steal from that project's description:
